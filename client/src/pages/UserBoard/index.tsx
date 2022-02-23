@@ -1,7 +1,9 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import SideBar from '../../components/SideBar';
+import TableFooter from '../../components/TableFooter';
 import { useAuth } from '../../hooks/auth';
+import useTable from '../../hooks/table';
 import api from '../../services/api';
 import Permission from '../../types/Permission';
 import UserPermissionAssociation from '../../types/UserPermissionAssociation';
@@ -38,6 +40,8 @@ const UsersTable: React.FC = () => {
     UserPermissionAssociation[]
   >([]);
   const [permissions, setPermissions] = useState<Permission[]>([]);
+  const [page, setPage] = useState(1);
+  const { slice, range } = useTable(users, page, 8);
   const { user } = useAuth();
 
   const canAccess = useCallback(
@@ -97,7 +101,7 @@ const UsersTable: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {users.map(user => (
+                {slice.map(user => (
                   <tr key={user.id}>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
@@ -134,6 +138,12 @@ const UsersTable: React.FC = () => {
               </tbody>
             </table>
           </div>
+          <TableFooter
+            range={range}
+            slice={slice}
+            setPage={setPage}
+            page={page}
+          />
         </div>
       </div>
     </Container>

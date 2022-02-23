@@ -15,6 +15,7 @@ import PermissionBoard from '../pages/PermissionBoard';
 import UserBoard from '../pages/UserBoard';
 import GrantForm from '../pages/GrantForm';
 import Archive from '../pages/Archive';
+import SearchPage from '../pages/SearchPage';
 
 const Routes: React.FC = () => {
   return (
@@ -26,6 +27,7 @@ const Routes: React.FC = () => {
 
       <Route path="/home" component={Home} isPrivate />
       <Route path="/grants" exact component={Home} isPrivate />
+      <Route path="/grants/search" exact component={SearchPage} isPrivate />
       <Route path="/grants/view/:id" exact component={GrantView} isPrivate />
       <Route path="/grants/view/:id/archive" component={Archive} isPrivate />
       <Route path="/grants/add" exact component={GrantForm} isPrivate />

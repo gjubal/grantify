@@ -5,6 +5,7 @@ import {
   BsClipboardData,
   BsGear,
   BsPeopleFill,
+  BsSearch,
 } from 'react-icons/bs';
 import { FaFire } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
@@ -62,13 +63,25 @@ const SideBar: React.FC<{ signOut(): void }> = ({ signOut }) => {
             <SideBarIcon icon={<BsPlus size="32" />} text="Add a new grant" />
           </Link>
         )}
+        <Link to="/grants/search">
+          <SideBarIcon
+            icon={<BsSearch size="20" />}
+            text="Search for a grant"
+          />
+        </Link>
         <Link to="/grants">
-          <SideBarIcon icon={<BsClipboardData size="20" />} text="Grants" />
+          <SideBarIcon
+            icon={<BsClipboardData size="20" />}
+            text="View all grants"
+          />
         </Link>
         {/* <SideBarIcon icon={<FaCalendar size="20" />} text="Calendar" /> */}
         {/* <SideBarIcon icon={<BsPeopleFill size="20" />} text="Grantors" /> */}
         <Link to="/users">
-          <SideBarIcon icon={<BsPeopleFill size="20" />} text="Users" />
+          <SideBarIcon
+            icon={<BsPeopleFill size="20" />}
+            text="View all users"
+          />
         </Link>
       </div>
       <div className="flex-end">
