@@ -64,12 +64,13 @@ const GrantView: React.FC = () => {
     async (data: Expense) => {
       try {
         formRef.current?.setErrors({});
+        console.log(data);
 
         const schema = Yup.object().shape({
           name: Yup.string().required('Expense name is required'),
-          lineItemCode: Yup.number(),
-          budget: Yup.number().required('Budget is required'),
-          amountSpent: Yup.number(),
+          lineItemCode: Yup.string(),
+          budget: Yup.string().required('Budget is required'),
+          amountSpent: Yup.string(),
           date: Yup.string().required('Date is required'),
         });
 
@@ -93,9 +94,9 @@ const GrantView: React.FC = () => {
           {
             id: expenseResponse.data.id,
             name: expenseResponse.data.name,
-            lineItemCode: expenseResponse.data.lineItemCode,
-            budget: expenseResponse.data.budget,
-            amountSpent: expenseResponse.data.amountSpent,
+            lineItemCode: Number(expenseResponse.data.lineItemCode),
+            budget: Number(expenseResponse.data.budget),
+            amountSpent: Number(expenseResponse.data.amountSpent),
             date: expenseResponse.data.date,
             grantId: expenseResponse.data.grantId,
           },
@@ -317,6 +318,7 @@ const ExpensesBreakdown: React.FC<{
                 ? expenses
                     .map(expense => Number(expense.amountSpent))
                     .reduce((acc, cv) => (acc += cv))
+                    .toFixed(2)
                 : 0}
             </h3>
           </div>

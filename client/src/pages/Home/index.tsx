@@ -72,7 +72,7 @@ const GrantTable: React.FC = () => {
   const { slice, range } = useTable(grants, page, 5);
 
   const { addToast } = useToast();
-  const { user } = useAuth();
+  const { user, token } = useAuth();
 
   function dateSort() {
     grants.sort((a, b) => (a.closeDate > b.closeDate ? 1 : -1));
@@ -120,7 +120,7 @@ const GrantTable: React.FC = () => {
     api
       .get<Permission[]>('permissions')
       .then(response => setPermissions(response.data));
-  }, [user.id]);
+  }, [token, user.id]);
 
   return (
     <div className="flex flex-col">
