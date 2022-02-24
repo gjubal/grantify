@@ -1,12 +1,12 @@
 import {MigrationInterface, QueryRunner} from "typeorm";
 
-export class AlterExpenseAttributes1645480781847 implements MigrationInterface {
-    name = 'AlterExpenseAttributes1645480781847'
+export class AlterExpenseAttributes1645736844515 implements MigrationInterface {
+    name = 'AlterExpenseAttributes1645736844515'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`ALTER TABLE "public"."expenses" DROP COLUMN "amount"`);
         await queryRunner.query(`ALTER TABLE "public"."expenses" ADD "lineItemCode" numeric`);
-        await queryRunner.query(`ALTER TABLE "public"."expenses" ADD "budget" numeric NOT NULL`);
+        await queryRunner.query(`ALTER TABLE "public"."expenses" ADD "budget" numeric`);
         await queryRunner.query(`ALTER TABLE "public"."expenses" ADD "amountSpent" numeric`);
         await queryRunner.query(`ALTER TABLE "public"."expenses" ADD "date" character varying NOT NULL`);
     }
