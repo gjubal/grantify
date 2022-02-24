@@ -64,13 +64,12 @@ const GrantView: React.FC = () => {
     async (data: Expense) => {
       try {
         formRef.current?.setErrors({});
-        console.log(data);
 
         const schema = Yup.object().shape({
           name: Yup.string().required('Expense name is required'),
-          lineItemCode: Yup.string(),
-          budget: Yup.string().required('Budget is required'),
-          amountSpent: Yup.string(),
+          lineItemCode: Yup.number(),
+          budget: Yup.number().required('Budget is required'),
+          amountSpent: Yup.number(),
           date: Yup.string().required('Date is required'),
         });
 

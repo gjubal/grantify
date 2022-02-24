@@ -20,7 +20,7 @@ export default class Expense extends BaseEntity {
   @Column({ type: 'decimal', nullable: true })
   lineItemCode: number;
 
-  @Column({ type: 'decimal' })
+  @Column({ type: 'decimal', nullable: true })
   budget: number;
 
   @Column({ type: 'decimal', nullable: true })
