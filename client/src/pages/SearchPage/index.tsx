@@ -41,11 +41,19 @@ const ContentContainer: React.FC<{ title: string }> = ({ title }) => {
 };
 
 function SortButton({
+  sortKey,
   onClick,
 }: {
   sortKey: any;
   onClick: MouseEventHandler<HTMLButtonElement>;
 }) {
+  if (sortKey === 'desc') {
+    return (
+      <button onClick={onClick} className="text-xs px-2">
+        ▲
+      </button>
+    );
+  }
   return (
     <button onClick={onClick} className="text-xs px-2">
       ▼
@@ -66,10 +74,17 @@ const SearchTable: React.FC = () => {
   const { user } = useAuth();
 
   function dateSort() {
-    const sortedGrants = grants.sort((a, b) =>
-      a.closeDate > b.closeDate ? 1 : -1,
-    );
-    setSortKey('sorted');
+    if (sortKey !== 'desc') {
+      const sortedGrants = grants.sort((a, b) =>
+        a.closeDate > b.closeDate ? 1 : -1,
+      );
+      setSortKey('desc');
+    } else if (sortKey === 'desc') {
+      const sortedGrants = grants.sort((a, b) =>
+        a.closeDate > b.closeDate ? -1 : 1,
+      );
+      setSortKey('asc');
+    }
   }
 
   const canAccess = useCallback(
@@ -188,10 +203,17 @@ const SearchTable: React.FC = () => {
                   .filter(obj => {
                     if (sortKey === '') {
                       return obj;
-                    } else if (sortKey === 'sorted') {
+                    } else if (sortKey === 'asc') {
                       const currentDate = new Date();
                       const objDate = new Date(obj.closeDate);
-                      const tof = objDate > currentDate;
+                      // const tof = objDate > currentDate;
+                      if (objDate > currentDate) {
+                        return obj;
+                      }
+                    } else if (sortKey === 'desc') {
+                      const currentDate = new Date();
+                      const objDate = new Date(obj.closeDate);
+                      // const tof = objDate > currentDate;
                       if (objDate > currentDate) {
                         return obj;
                       }
