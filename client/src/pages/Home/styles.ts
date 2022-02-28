@@ -14,7 +14,6 @@ export const Profile = styled.div`
   }
 
   div {
-    display: flex;
     flex-direction: column;
     margin-left: 16px;
     line-height: 24px;

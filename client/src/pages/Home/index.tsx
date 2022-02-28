@@ -204,6 +204,22 @@ const GrantTable: React.FC = () => {
                           <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
                             {grant.status}
                           </span>
+                        ) : grant.status === 'Declined' ? (
+                          <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-200 text-red-700">
+                            {grant.status}
+                          </span>
+                        ) : grant.status === 'Past Due' ? (
+                          <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                            {grant.status}
+                          </span>
+                        ) : grant.status === 'Pending' ? (
+                          <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-700">
+                            {grant.status}
+                          </span>
+                        ) : grant.status === 'Inactive' ? (
+                          <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-300 text-gray-800">
+                            {grant.status}
+                          </span>
                         ) : (
                           <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-300 text-gray-800">
                             {grant.status}
