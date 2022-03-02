@@ -41,11 +41,19 @@ const ContentContainer: React.FC<{ title: string }> = ({ title }) => {
 };
 
 function SortButton({
+  sortKey,
   onClick,
 }: {
   sortKey: any;
   onClick: MouseEventHandler<HTMLButtonElement>;
 }) {
+  if (sortKey === 'desc') {
+    return (
+      <button onClick={onClick} className="text-xs px-2">
+        ▲
+      </button>
+    );
+  }
   return (
     <button onClick={onClick} className="text-xs px-2">
       ▼
@@ -66,8 +74,17 @@ const SearchTable: React.FC = () => {
   const { user } = useAuth();
 
   function dateSort() {
-    grants.sort((a, b) => (a.closeDate > b.closeDate ? 1 : -1));
-    setSortKey('sorted');
+    if (sortKey !== 'desc') {
+      const sortedGrants = grants.sort((a, b) =>
+        a.closeDate > b.closeDate ? 1 : -1,
+      );
+      setSortKey('desc');
+    } else if (sortKey === 'desc') {
+      const sortedGrants = grants.sort((a, b) =>
+        a.closeDate > b.closeDate ? -1 : 1,
+      );
+      setSortKey('asc');
+    }
   }
 
   const canAccess = useCallback(
@@ -171,15 +188,35 @@ const SearchTable: React.FC = () => {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {grants
-                  .filter(val => {
+                  .filter(obj => {
                     if (searchKey === '') {
-                      return val;
+                      return obj;
                     } else if (
-                      val.grantName
+                      obj.grantName
                         .toLowerCase()
                         .includes(searchKey.toLowerCase())
                     ) {
-                      return val;
+                      return obj;
+                    }
+                    return null;
+                  })
+                  .filter(obj => {
+                    if (sortKey === '') {
+                      return obj;
+                    } else if (sortKey === 'asc') {
+                      const currentDate = new Date();
+                      const objDate = new Date(obj.closeDate);
+                      // const tof = objDate > currentDate;
+                      if (objDate > currentDate) {
+                        return obj;
+                      }
+                    } else if (sortKey === 'desc') {
+                      const currentDate = new Date();
+                      const objDate = new Date(obj.closeDate);
+                      // const tof = objDate > currentDate;
+                      if (objDate > currentDate) {
+                        return obj;
+                      }
                     }
                     return null;
                   })
@@ -215,8 +252,28 @@ const SearchTable: React.FC = () => {
                             <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
                               {grant.status}
                             </span>
-                          ) : (
+                          ) : grant.status === 'Declined' ? (
+                            <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-200 text-red-700">
+                              {grant.status}
+                            </span>
+                          ) : grant.status === 'Missed Deadline' ? (
+                            <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                              {grant.status}
+                            </span>
+                          ) : grant.status === 'Pending' ? (
+                            <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-700">
+                              {grant.status}
+                            </span>
+                          ) : grant.status === 'Incomplete' ? (
+                            <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-cyan-200 text-cyan-900">
+                              {grant.status}
+                            </span>
+                          ) : grant.status === 'Inactive' ? (
                             <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-300 text-gray-800">
+                              {grant.status}
+                            </span>
+                          ) : (
+                            <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full">
                               {grant.status}
                             </span>
                           )}
