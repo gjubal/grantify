@@ -54,6 +54,7 @@ const FormFields: React.FC = () => {
   const history = useHistory();
   const formRef = useRef<FormHandles>(null);
   const { id } = useParams<{ id: string }>();
+  const { user } = useAuth();
 
   const onSubmit = useCallback(
     async (data: Grant) => {
@@ -275,14 +276,6 @@ const FormFields: React.FC = () => {
               />
 
               <Input
-                name="writerName"
-                label="Writer Name (optional)"
-                placeholder="Lucius Fox"
-                value={id && writerName}
-                onChange={e => setWriterName(e.target.value)}
-              />
-
-              <Input
                 name="applicationUrl"
                 label="Application Url (optional)"
                 placeholder="https://www.wayneenterprises.com"
@@ -312,6 +305,13 @@ const FormFields: React.FC = () => {
                 placeholder="01/15/2023"
                 value={id && expirationDate}
                 onChange={e => setExpirationDate(e.target.value)}
+              />
+
+              <Input
+                name="writerName"
+                label="Writer Name"
+                value={`${user.firstName} ${user.lastName}`}
+                disabled
               />
             </fieldset>
 

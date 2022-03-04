@@ -18,10 +18,10 @@ import { useAuth } from '../../hooks/auth';
 import { useToast } from '../../hooks/toast';
 import api from '../../services/api';
 import { Attachment } from '../../types/Attachment';
-import { Grant } from '../GrantList';
 import { AnimationContainer, Container } from './styles';
 import * as Yup from 'yup';
 import getValidationErrors from '../../utils/getValidationErrors';
+import { Grant } from '../../types/Grant';
 
 const Archive: React.FC = () => {
   const [grant, setGrant] = useState<Grant>();
@@ -90,8 +90,8 @@ const Archive: React.FC = () => {
 
         addToast({
           type: 'success',
-          title: 'Expense added successfully!',
-          description: 'The expenses table has been updated.',
+          title: 'File added successfully!',
+          description: 'The attachments table has been updated.',
         });
       } catch (err) {
         console.log(err);

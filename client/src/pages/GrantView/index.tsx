@@ -234,12 +234,11 @@ const DataBox: React.FC<{ title: string; data: string; link?: string }> = ({
   link,
 }) => {
   return (
-    <div className="data-box">
-      <div className="data-box-title">
+    <div className="bg-white my-4 p-6 rounded-xl mx-2 shadow-md">
+      <div className="text-gray-500 mb-3">
         <h4>{title}</h4>
       </div>
-      <div className="data-box-info">
-        {/* {!isNaN(Number(data)) ? <h3>${data}</h3> : <h3>${data}</h3>} */}
+      <div>
         {!!Date.parse(data) && isNaN(Number(data)) && (
           <h3>
             {new Date(data).getUTCMonth() + 1}/{new Date(data).getUTCDate()}/
@@ -251,9 +250,9 @@ const DataBox: React.FC<{ title: string; data: string; link?: string }> = ({
           {!isNaN(Number(data)) && <h3>${data}</h3>}
         </span>
 
-        {title === 'Grantor' && !link && <h3>{data}</h3>}
+        {title === 'Application Url' && !link && <h3>{data}</h3>}
 
-        {title === 'Grantor' && link && (
+        {title === 'Application Url' && link && (
           <h3>
             <a href={link}>{data}</a>
           </h3>

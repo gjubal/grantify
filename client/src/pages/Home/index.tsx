@@ -1,10 +1,4 @@
-import React, {
-  Fragment,
-  MouseEventHandler,
-  useCallback,
-  useEffect,
-  useState,
-} from 'react';
+import React, { Fragment, useCallback, useEffect, useState } from 'react';
 import SideBar from '../../components/SideBar';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../hooks/auth';
@@ -48,36 +42,17 @@ const ContentContainer: React.FC<{ title: string }> = ({ title }) => {
   );
 };
 
-function SortButton({
-  onClick,
-}: {
-  sortKey: any;
-  onClick: MouseEventHandler<HTMLButtonElement>;
-}) {
-  return (
-    <button onClick={onClick} className="text-xs px-2">
-      ▼
-    </button>
-  );
-}
-
 const GrantTable: React.FC = () => {
   const [grants, setGrants] = useState<Grant[]>([]);
   const [userPermissionAssociations, setUserPermissionAssociations] = useState<
     UserPermissionAssociation[]
   >([]);
   const [permissions, setPermissions] = useState<Permission[]>([]);
-  const [sortKey, setSortKey] = useState('');
   const [page, setPage] = useState(1);
-  const { slice, range } = useTable(grants, page, 5);
+  const { slice, range } = useTable(grants, page, 8);
 
   const { addToast } = useToast();
   const { user, token } = useAuth();
-
-  function dateSort() {
-    grants.sort((a, b) => (a.closeDate > b.closeDate ? 1 : -1));
-    setSortKey('sorted');
-  }
 
   const canAccess = useCallback(
     (permissionDisplayName: string): boolean => {
@@ -141,12 +116,6 @@ const GrantTable: React.FC = () => {
                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                   >
                     Open Date / Close Date
-                    <SortButton
-                      onClick={() => dateSort()}
-                      {...{
-                        sortKey,
-                      }}
-                    />
                   </th>
                   <th
                     scope="col"

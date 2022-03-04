@@ -75,15 +75,6 @@
     @apply text-gray-800 font-semibold text-6xl mb-10 mt-5;
   }
 
-  .data-box {
-    @apply bg-white my-4 p-6 rounded-xl mx-2
-    shadow-md;
-  }
-
-  .data-box-title {
-    @apply text-gray-500 mb-3;
-  }
-
   input:checked ~ .dot {
     transform: translateX(100%);
     background-color: #4080ea;
