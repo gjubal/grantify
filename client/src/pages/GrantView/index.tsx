@@ -30,6 +30,7 @@ import { Expense } from '../../types/Expense';
 import { useToast } from '../../hooks/toast';
 import { FormHandles } from '@unform/core';
 import getValidationErrors from '../../utils/getValidationErrors';
+import formatCurrency from '../../utils/formatCurrency';
 
 const GrantView: React.FC = () => {
   const [grant, setGrant] = useState<Grant>();
@@ -251,7 +252,7 @@ const DataBox: React.FC<{ title: string; data: string; link?: string }> = ({
         )}
 
         <span className="text-lg antialiased font-bold">
-          {!isNaN(Number(data)) && <h3>${data}</h3>}
+          {!isNaN(Number(data)) && <h3>${formatCurrency(Number(data))}</h3>}
         </span>
 
         {(title === 'Sponsoring Agency' || title === 'Writer') && (
@@ -354,10 +355,14 @@ const ExpensesBreakdown: React.FC<{
             <h3 className="text-lg">
               $
               {expenses.length !== 0
-                ? expenses
-                    .map(expense => Number(expense.amountSpent))
-                    .reduce((acc, cv) => (acc += cv))
-                    .toFixed(2)
+                ? formatCurrency(
+                    Number(
+                      expenses
+                        .map(expense => Number(expense.amountSpent))
+                        .reduce((acc, cv) => (acc += cv))
+                        .toFixed(2),
+                    ),
+                  )
                 : 0}
             </h3>
           </div>
@@ -380,10 +385,10 @@ const ExpenseRow: React.FC<{ expense: Expense; deleteExpense: any }> = ({
         {expense.lineItemCode}
       </Entry>
       <Entry width="4" justification="end">
-        ${expense.budget}
+        ${formatCurrency(expense.budget)}
       </Entry>
       <Entry width="5" justification="center">
-        ${expense.amountSpent}
+        ${formatCurrency(expense.amountSpent)}
       </Entry>
       <Entry width="0" justification="center">
         {expense.date}

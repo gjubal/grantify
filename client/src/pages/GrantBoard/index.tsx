@@ -11,6 +11,7 @@ import UserPermissionAssociation from '../../types/UserPermissionAssociation';
 import Permission from '../../types/Permission';
 import TableFooter from '../../components/TableFooter';
 import useTable from '../../hooks/table';
+import formatCurrency from '../../utils/formatCurrency';
 
 // interface ConfirmDeletionProps {
 //   id: string;
@@ -170,9 +171,11 @@ const GrantTable: React.FC = () => {
                             <div className="text-sm font-medium text-gray-900">
                               {grant.grantName}
                             </div>
-                            <div className="text-sm text-gray-500">
-                              {grant.writerName}
-                            </div>
+                            {grant.sponsoringAgency && (
+                              <div className="text-sm text-gray-500">
+                                {grant.sponsoringAgency}
+                              </div>
+                            )}
                           </div>
                         </div>
                       </td>
@@ -221,11 +224,12 @@ const GrantTable: React.FC = () => {
                       </td>
                       {grant.amountApproved ? (
                         <td className="px-6 py-4 whitespace-nowrap text-sm">
-                          ${grant.amountRequested} / ${grant.amountApproved}
+                          ${formatCurrency(grant.amountRequested)} / $
+                          {formatCurrency(grant.amountApproved)}
                         </td>
                       ) : (
                         <td className="px-6 py-4 whitespace-nowrap text-sm">
-                          ${grant.amountRequested}
+                          ${formatCurrency(grant.amountRequested)}
                         </td>
                       )}
                       {canAccess('viewGrant') && (

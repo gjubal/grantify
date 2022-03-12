@@ -17,6 +17,7 @@ import { Grant } from '../../types/Grant';
 import { useToast } from '../../hooks/toast';
 import UserPermissionAssociation from '../../types/UserPermissionAssociation';
 import Permission from '../../types/Permission';
+import formatCurrency from '../../utils/formatCurrency';
 
 const SearchPage: React.FC = () => {
   const { signOut } = useAuth();
@@ -249,9 +250,11 @@ const SearchTable: React.FC = () => {
                               <div className="text-sm font-medium text-gray-900">
                                 {grant.grantName}
                               </div>
-                              <div className="text-sm text-gray-500">
-                                {grant.writerName}
-                              </div>
+                              {grant.sponsoringAgency && (
+                                <div className="text-sm text-gray-500">
+                                  {grant.sponsoringAgency}
+                                </div>
+                              )}
                             </div>
                           </div>
                         </td>
@@ -300,11 +303,12 @@ const SearchTable: React.FC = () => {
                         </td>
                         {grant.amountApproved ? (
                           <td className="px-6 py-4 whitespace-nowrap text-sm">
-                            ${grant.amountRequested} / ${grant.amountApproved}
+                            ${formatCurrency(grant.amountRequested)} / $
+                            {formatCurrency(grant.amountApproved)}
                           </td>
                         ) : (
                           <td className="px-6 py-4 whitespace-nowrap text-sm">
-                            ${grant.amountRequested}
+                            ${formatCurrency(grant.amountRequested)}
                           </td>
                         )}
                         {canAccess('viewGrant') && (
