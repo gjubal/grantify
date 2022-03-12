@@ -18,6 +18,9 @@ import { useToast } from '../../hooks/toast';
 import UserPermissionAssociation from '../../types/UserPermissionAssociation';
 import Permission from '../../types/Permission';
 import formatCurrency from '../../utils/formatCurrency';
+import MenuIcon from '../../components/MenuIcon';
+import { FiInfo } from 'react-icons/fi';
+import StatusCard from '../../components/StatusCard';
 
 const SearchPage: React.FC = () => {
   const { signOut } = useAuth();
@@ -76,14 +79,10 @@ const SearchTable: React.FC = () => {
 
   function dateSort() {
     if (sortKey !== 'desc') {
-      const sortedGrants = grants.sort((a, b) =>
-        a.closeDate > b.closeDate ? 1 : -1,
-      );
+      grants.sort((a, b) => (a.closeDate > b.closeDate ? 1 : -1));
       setSortKey('desc');
     } else if (sortKey === 'desc') {
-      const sortedGrants = grants.sort((a, b) =>
-        a.closeDate > b.closeDate ? -1 : 1,
-      );
+      grants.sort((a, b) => (a.closeDate > b.closeDate ? -1 : 1));
       setSortKey('asc');
     }
   }
@@ -124,7 +123,14 @@ const SearchTable: React.FC = () => {
   useEffect(() => {
     api
       .get<Grant[]>('grants')
-      .then(response => setGrants(response.data))
+      .then(response => {
+        const sortedGrants = [...response.data].sort((a, b) => {
+          if (a.grantName > b.grantName) return 1;
+          else if (a.grantName < b.grantName) return -1;
+          else return 0;
+        });
+        setGrants(sortedGrants);
+      })
       .catch(error => {
         if (error.response.status === 401) {
           addToast({
@@ -155,7 +161,7 @@ const SearchTable: React.FC = () => {
     <div className="flex flex-col">
       <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
         <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
-          <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg bg-white">
+          <div className="shadow border-b border-gray-200 sm:rounded-lg bg-white">
             <Search
               icon={FaSearch}
               placeholder="Search for a grant by name..."
@@ -163,7 +169,7 @@ const SearchTable: React.FC = () => {
                 setSearchKey(event.target.value);
               }}
             />
-            <table className="min-w-full divide-y divide-gray-200">
+            <table className="min-w-full divide-y divide-gray-200 overflow-y-auto">
               <thead className="bg-gray-50">
                 <tr>
                   <th
@@ -174,9 +180,18 @@ const SearchTable: React.FC = () => {
                   </th>
                   <th
                     scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    className="flex flex-row items-center px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                   >
-                    Open Date / Close Date
+                    Open date
+                    <MenuIcon
+                      icon={<FiInfo size={14} />}
+                      text="When the grant application opens"
+                    />
+                    - Close date
+                    <MenuIcon
+                      icon={<FiInfo size={14} />}
+                      text="When the grant application closes (deadline)"
+                    />
                     <SortButton
                       onClick={() => dateSort()}
                       {...{
@@ -192,9 +207,18 @@ const SearchTable: React.FC = () => {
                   </th>
                   <th
                     scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    className="flex flex-row items-center px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                   >
-                    Amount requested / approved
+                    Requested
+                    <MenuIcon
+                      icon={<FiInfo size={14} />}
+                      text="How much was applied for"
+                    />
+                    - Approved
+                    <MenuIcon
+                      icon={<FiInfo size={14} />}
+                      text="How much is currently available"
+                    />
                   </th>
                   <th scope="col" className="relative px-6 py-3">
                     <span className="sr-only">View</span>
@@ -227,14 +251,12 @@ const SearchTable: React.FC = () => {
                     } else if (sortKey === 'asc') {
                       const currentDate = new Date();
                       const objDate = new Date(obj.closeDate);
-                      // const tof = objDate > currentDate;
                       if (objDate > currentDate) {
                         return obj;
                       }
                     } else if (sortKey === 'desc') {
                       const currentDate = new Date();
                       const objDate = new Date(obj.closeDate);
-                      // const tof = objDate > currentDate;
                       if (objDate > currentDate) {
                         return obj;
                       }
@@ -271,40 +293,16 @@ const SearchTable: React.FC = () => {
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          {grant.status === 'Approved' ? (
-                            <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                              {grant.status}
-                            </span>
-                          ) : grant.status === 'Declined' ? (
-                            <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-200 text-red-700">
-                              {grant.status}
-                            </span>
-                          ) : grant.status === 'Missed Deadline' ? (
-                            <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                              {grant.status}
-                            </span>
-                          ) : grant.status === 'Pending' ? (
-                            <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-700">
-                              {grant.status}
-                            </span>
-                          ) : grant.status === 'Incomplete' ? (
-                            <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-cyan-200 text-cyan-900">
-                              {grant.status}
-                            </span>
-                          ) : grant.status === 'Inactive' ? (
-                            <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-300 text-gray-800">
-                              {grant.status}
-                            </span>
-                          ) : (
-                            <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full">
-                              {grant.status}
-                            </span>
-                          )}
+                          <StatusCard text={grant.status} />
                         </td>
                         {grant.amountApproved ? (
-                          <td className="px-6 py-4 whitespace-nowrap text-sm">
-                            ${formatCurrency(grant.amountRequested)} / $
-                            {formatCurrency(grant.amountApproved)}
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="text-sm text-gray-900">
+                              ${formatCurrency(grant.amountRequested)}
+                            </div>
+                            <div className="text-sm text-green-800">
+                              ${formatCurrency(grant.amountApproved)}
+                            </div>
                           </td>
                         ) : (
                           <td className="px-6 py-4 whitespace-nowrap text-sm">

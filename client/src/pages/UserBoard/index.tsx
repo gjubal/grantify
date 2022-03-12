@@ -67,9 +67,16 @@ const UsersTable: React.FC = () => {
     api
       .get('users')
       .then(response => {
-        setUsers(
-          response.data.filter((user: User) => user.email !== 'seed@dev.edu'),
+        const usersArr: User[] = response.data.filter(
+          (user: User) => user.email !== process.env.REACT_APP_SEED_USER_EMAIL,
         );
+
+        const sortedUsers = [...usersArr].sort((a, b) => {
+          if (a.firstName > b.firstName) return 1;
+          else if (a.firstName < b.firstName) return -1;
+          else return 0;
+        });
+        setUsers(sortedUsers);
       })
       .catch(error => {
         if (error.response.status === 401) {

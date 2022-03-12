@@ -12,6 +12,9 @@ import Permission from '../../types/Permission';
 import TableFooter from '../../components/TableFooter';
 import useTable from '../../hooks/table';
 import formatCurrency from '../../utils/formatCurrency';
+import { FiInfo } from 'react-icons/fi';
+import MenuIcon from '../../components/MenuIcon';
+import StatusCard from '../../components/StatusCard';
 
 // interface ConfirmDeletionProps {
 //   id: string;
@@ -91,7 +94,15 @@ const GrantTable: React.FC = () => {
   useEffect(() => {
     api
       .get<Grant[]>('grants')
-      .then(response => setGrants(response.data))
+      .then(response => {
+        setGrants(
+          [...response.data].sort((a, b) => {
+            if (a.grantName > b.grantName) return 1;
+            else if (a.grantName < b.grantName) return -1;
+            else return 0;
+          }),
+        );
+      })
       .catch(error => {
         if (error.response.status === 401) {
           addToast({
@@ -105,7 +116,7 @@ const GrantTable: React.FC = () => {
 
         return error;
       });
-  }, [addToast, signOut]);
+  }, [addToast, grants, signOut]);
 
   useEffect(() => {
     api
@@ -134,9 +145,18 @@ const GrantTable: React.FC = () => {
                   </th>
                   <th
                     scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    className="flex flex-row items-center px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                   >
-                    Open Date / Close Date
+                    Open date
+                    <MenuIcon
+                      icon={<FiInfo size={14} />}
+                      text="When the grant application opens"
+                    />
+                    - Close date
+                    <MenuIcon
+                      icon={<FiInfo size={14} />}
+                      text="When the grant application closes (deadline)"
+                    />
                   </th>
                   <th
                     scope="col"
@@ -146,9 +166,18 @@ const GrantTable: React.FC = () => {
                   </th>
                   <th
                     scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    className="flex flex-row items-center px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                   >
-                    Amount requested / approved
+                    Requested
+                    <MenuIcon
+                      icon={<FiInfo size={14} />}
+                      text="How much was applied for"
+                    />
+                    - Approved
+                    <MenuIcon
+                      icon={<FiInfo size={14} />}
+                      text="How much is currently available"
+                    />
                   </th>
                   <th scope="col" className="relative px-6 py-3">
                     <span className="sr-only">View</span>
@@ -192,40 +221,16 @@ const GrantTable: React.FC = () => {
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        {grant.status === 'Approved' ? (
-                          <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                            {grant.status}
-                          </span>
-                        ) : grant.status === 'Declined' ? (
-                          <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-200 text-red-700">
-                            {grant.status}
-                          </span>
-                        ) : grant.status === 'Missed Deadline' ? (
-                          <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                            {grant.status}
-                          </span>
-                        ) : grant.status === 'Pending' ? (
-                          <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-700">
-                            {grant.status}
-                          </span>
-                        ) : grant.status === 'Incomplete' ? (
-                          <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-cyan-200 text-cyan-900">
-                            {grant.status}
-                          </span>
-                        ) : grant.status === 'Inactive' ? (
-                          <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-300 text-gray-800">
-                            {grant.status}
-                          </span>
-                        ) : (
-                          <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full">
-                            {grant.status}
-                          </span>
-                        )}
+                        <StatusCard text={grant.status} />
                       </td>
                       {grant.amountApproved ? (
-                        <td className="px-6 py-4 whitespace-nowrap text-sm">
-                          ${formatCurrency(grant.amountRequested)} / $
-                          {formatCurrency(grant.amountApproved)}
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm text-gray-900">
+                            ${formatCurrency(grant.amountRequested)}
+                          </div>
+                          <div className="text-sm text-green-800">
+                            ${formatCurrency(grant.amountApproved)}
+                          </div>
                         </td>
                       ) : (
                         <td className="px-6 py-4 whitespace-nowrap text-sm">
@@ -297,41 +302,5 @@ const GrantTable: React.FC = () => {
     </div>
   );
 };
-
-// const ConfirmDeletionPopup: React.FC<ConfirmDeletionProps> = ({
-//   id,
-//   open,
-//   setOpen,
-//   grants,
-//   setGrants,
-// }) => {
-//   const cancelButtonRef = useRef(null);
-//   const { addToast } = useToast();
-
-//   const deleteGrant = useCallback(
-//     (id: string) => {
-//       api.get('grants').then(async response => {
-//         const findGrant: Grant = response.data.find((g: Grant) => g.id === id);
-
-//         if (findGrant) {
-//           console.log(findGrant);
-//           setGrants(grants.filter(grant => grant.id !== findGrant.id));
-//           await api.delete(`grants/${findGrant.id}`);
-
-//           addToast({
-//             type: 'success',
-//             title: 'Grant removed!',
-//             description: 'The changes have been saved successfully.',
-//           });
-//         }
-//       });
-//     },
-//     [addToast, grants, setGrants],
-//   );
-
-//   return (
-
-//   );
-// };
 
 export default GrantBoard;
