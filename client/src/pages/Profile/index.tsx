@@ -8,7 +8,7 @@ import * as Yup from 'yup';
 import Button from '../../components/Button';
 import Input from '../../components/Input';
 import SideBar from '../../components/SideBar';
-import { useAuth } from '../../hooks/auth';
+import { useAuth } from '../../hooks/authentication';
 import { useToast } from '../../hooks/toast';
 import api from '../../services/api';
 import getValidationErrors from '../../utils/getValidationErrors';

@@ -14,7 +14,7 @@ import Button from '../../components/Button';
 import Divider from '../../components/Divider';
 import Input from '../../components/Input';
 import SideBar from '../../components/SideBar';
-import { useAuth } from '../../hooks/auth';
+import { useAuth } from '../../hooks/authentication';
 import { useToast } from '../../hooks/toast';
 import api from '../../services/api';
 import { Attachment } from '../../types/Attachment';

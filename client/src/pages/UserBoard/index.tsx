@@ -2,8 +2,9 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import SideBar from '../../components/SideBar';
 import TableFooter from '../../components/TableFooter';
-import { useAuth } from '../../hooks/auth';
+import { useAuth } from '../../hooks/authentication';
 import useTable from '../../hooks/table';
+import { useToast } from '../../hooks/toast';
 import api from '../../services/api';
 import Permission from '../../types/Permission';
 import UserPermissionAssociation from '../../types/UserPermissionAssociation';
@@ -42,7 +43,8 @@ const UsersTable: React.FC = () => {
   const [permissions, setPermissions] = useState<Permission[]>([]);
   const [page, setPage] = useState(1);
   const { slice, range } = useTable(users, page, 8);
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
+  const { addToast } = useToast();
 
   const canAccess = useCallback(
     (permissionDisplayName: string): boolean => {
@@ -62,17 +64,37 @@ const UsersTable: React.FC = () => {
   );
 
   useEffect(() => {
-    api.get('users').then(response => {
-      setUsers(
-        response.data.filter((user: User) => user.email !== 'seed@dev.com'),
-      );
-    });
+    api
+      .get('users')
+      .then(response => {
+        setUsers(
+          response.data.filter((user: User) => user.email !== 'seed@dev.edu'),
+        );
+      })
+      .catch(error => {
+        if (error.response.status === 401) {
+          addToast({
+            type: 'error',
+            title: 'Session expired',
+            description: 'Please log in again.',
+          });
+
+          signOut();
+        }
+
+        return error;
+      });
+  }, [addToast, signOut]);
+
+  useEffect(() => {
     api
       .get<UserPermissionAssociation[]>(`users/${user.id}/user-permissions`)
-      .then(response => setUserPermissionAssociations(response.data));
+      .then(response => setUserPermissionAssociations(response.data))
+      .catch(error => error);
     api
       .get<Permission[]>('permissions')
-      .then(response => setPermissions(response.data));
+      .then(response => setPermissions(response.data))
+      .catch(error => error);
   }, [user.id]);
 
   return (

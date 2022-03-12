@@ -5,7 +5,7 @@ import { useParams } from 'react-router';
 import { v4 } from 'uuid';
 import Button from '../../components/Button';
 import SideBar from '../../components/SideBar';
-import { useAuth } from '../../hooks/auth';
+import { useAuth } from '../../hooks/authentication';
 import { useToast } from '../../hooks/toast';
 import api from '../../services/api';
 import { Container } from './styles';

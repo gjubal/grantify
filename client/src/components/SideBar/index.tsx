@@ -9,7 +9,7 @@ import {
 } from 'react-icons/bs';
 import { FaFire } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
-import { useAuth } from '../../hooks/auth';
+import { useAuth } from '../../hooks/authentication';
 import api from '../../services/api';
 import Permission from '../../types/Permission';
 import UserPermissionAssociation from '../../types/UserPermissionAssociation';
@@ -41,10 +41,12 @@ const SideBar: React.FC<{ signOut(): void }> = ({ signOut }) => {
   useEffect(() => {
     api
       .get<UserPermissionAssociation[]>(`users/${user.id}/user-permissions`)
-      .then(response => setUserPermissionAssociations(response.data));
+      .then(response => setUserPermissionAssociations(response.data))
+      .catch(error => error);
     api
       .get<Permission[]>('permissions')
-      .then(response => setPermissions(response.data));
+      .then(response => setPermissions(response.data))
+      .catch(error => error);
   }, [user.id]);
   return (
     <div

@@ -8,7 +8,7 @@ import React, {
 import SideBar from '../../components/SideBar';
 import { Link } from 'react-router-dom';
 import Search from '../../components/Search';
-import { useAuth } from '../../hooks/auth';
+import { useAuth } from '../../hooks/authentication';
 
 import { BsTrash } from 'react-icons/bs';
 import { FaSearch } from 'react-icons/fa';
@@ -71,7 +71,7 @@ const SearchTable: React.FC = () => {
   const [sortKey, setSortKey] = useState('');
 
   const { addToast } = useToast();
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
 
   function dateSort() {
     if (sortKey !== 'desc') {
@@ -121,13 +121,33 @@ const SearchTable: React.FC = () => {
   );
 
   useEffect(() => {
-    api.get<Grant[]>('grants').then(response => setGrants(response.data));
+    api
+      .get<Grant[]>('grants')
+      .then(response => setGrants(response.data))
+      .catch(error => {
+        if (error.response.status === 401) {
+          addToast({
+            type: 'error',
+            title: 'Session expired',
+            description: 'Please log in again.',
+          });
+
+          signOut();
+        }
+
+        return error;
+      });
+  }, [addToast, signOut]);
+
+  useEffect(() => {
     api
       .get<UserPermissionAssociation[]>(`users/${user.id}/user-permissions`)
-      .then(response => setUserPermissionAssociations(response.data));
+      .then(response => setUserPermissionAssociations(response.data))
+      .catch(error => error);
     api
       .get<Permission[]>('permissions')
-      .then(response => setPermissions(response.data));
+      .then(response => setPermissions(response.data))
+      .catch(error => error);
   }, [user.id]);
 
   return (

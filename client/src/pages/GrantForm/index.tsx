@@ -5,7 +5,7 @@ import { Form } from '@unform/web';
 import * as Yup from 'yup';
 import Input from '../../components/Input';
 import SideBar from '../../components/SideBar';
-import { useAuth } from '../../hooks/auth';
+import { useAuth } from '../../hooks/authentication';
 import { useToast } from '../../hooks/toast';
 import { Grant } from '../../types/Grant';
 import api from '../../services/api';
@@ -54,7 +54,7 @@ const FormFields: React.FC = () => {
   const history = useHistory();
   const formRef = useRef<FormHandles>(null);
   const { id } = useParams<{ id: string }>();
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
 
   const onSubmit = useCallback(
     async (data: Grant) => {
@@ -125,7 +125,7 @@ const FormFields: React.FC = () => {
             ...(amountApproved && {
               amountApproved: Number(data.amountApproved),
             }),
-            ...(writerName && { writerName: data.writerName }),
+            writerName: `${user.firstName} ${user.lastName}`,
             ...(applicationUrl && { applicationUrl: data.applicationUrl }),
             ...(sponsoringAgency && {
               sponsoringAgency: data.sponsoringAgency,
@@ -139,6 +139,8 @@ const FormFields: React.FC = () => {
               expirationDate: convertFromStringToTimestamp(data.expirationDate),
             }),
           };
+
+          console.log(formData);
 
           await api.post('/grants', formData);
 
@@ -180,45 +182,62 @@ const FormFields: React.FC = () => {
       openDate,
       sponsoringAgency,
       status,
+      user.firstName,
+      user.lastName,
       writerName,
     ],
   );
 
   useEffect(() => {
     if (id) {
-      api.get(`grants/${id}`).then(response => {
-        const {
-          amountApproved,
-          amountRequested,
-          closeDate,
-          dateWhenFundsWereReceived,
-          expirationDate,
-          grantName,
-          openDate,
-          writerName,
-          applicationUrl,
-          sponsoringAgency,
-          status,
-        } = response.data;
+      api
+        .get(`grants/${id}`)
+        .then(response => {
+          const {
+            amountApproved,
+            amountRequested,
+            closeDate,
+            dateWhenFundsWereReceived,
+            expirationDate,
+            grantName,
+            openDate,
+            writerName,
+            applicationUrl,
+            sponsoringAgency,
+            status,
+          } = response.data;
 
-        setGrantName(grantName);
-        setOpenDate(convertFromTimestampToString(openDate));
-        setCloseDate(convertFromTimestampToString(closeDate));
-        setStatus(status);
-        setAmountRequested(amountRequested);
-        if (amountApproved) setAmountApproved(amountApproved);
-        if (writerName) setWriterName(writerName);
-        if (applicationUrl) setApplicationUrl(applicationUrl);
-        if (sponsoringAgency) setSponsoringAgency(sponsoringAgency);
-        if (dateWhenFundsWereReceived)
-          setDateWhenFundsWereReceived(
-            convertFromTimestampToString(dateWhenFundsWereReceived),
-          );
-        if (expirationDate)
-          setExpirationDate(convertFromTimestampToString(expirationDate));
-      });
+          setGrantName(grantName);
+          setOpenDate(convertFromTimestampToString(openDate));
+          setCloseDate(convertFromTimestampToString(closeDate));
+          setStatus(status);
+          setAmountRequested(amountRequested);
+          if (amountApproved) setAmountApproved(amountApproved);
+          if (writerName) setWriterName(writerName);
+          if (applicationUrl) setApplicationUrl(applicationUrl);
+          if (sponsoringAgency) setSponsoringAgency(sponsoringAgency);
+          if (dateWhenFundsWereReceived)
+            setDateWhenFundsWereReceived(
+              convertFromTimestampToString(dateWhenFundsWereReceived),
+            );
+          if (expirationDate)
+            setExpirationDate(convertFromTimestampToString(expirationDate));
+        })
+        .catch(error => {
+          if (error.response.status === 401) {
+            addToast({
+              type: 'error',
+              title: 'Session expired',
+              description: 'Please log in again.',
+            });
+
+            signOut();
+          }
+
+          return error;
+        });
     }
-  }, [id]);
+  }, [addToast, id, signOut]);
 
   return (
     <Content>
@@ -307,12 +326,14 @@ const FormFields: React.FC = () => {
                 onChange={e => setExpirationDate(e.target.value)}
               />
 
-              <Input
-                name="writerName"
-                label="Writer Name"
-                value={`${user.firstName} ${user.lastName}`}
-                disabled
-              />
+              {id && (
+                <Input
+                  name="writerName"
+                  label="Writer Name"
+                  value={writerName}
+                  disabled
+                />
+              )}
             </fieldset>
 
             <footer>

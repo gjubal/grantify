@@ -7,7 +7,7 @@ import React, {
   useState,
 } from 'react';
 
-import { useAuth } from '../../hooks/auth';
+import { useAuth } from '../../hooks/authentication';
 import SideBar from '../../components/SideBar';
 import { useParams } from 'react-router';
 import api from '../../services/api';
@@ -128,10 +128,14 @@ const GrantView: React.FC = () => {
   );
 
   useEffect(() => {
-    api.get<Grant>(`grants/${id}`).then(response => setGrant(response.data));
+    api
+      .get<Grant>(`grants/${id}`)
+      .then(response => setGrant(response.data))
+      .catch(error => error);
     api
       .get<Expense[]>(`grants/view/${id}`)
-      .then(response => setExpenses(response.data));
+      .then(response => setExpenses(response.data))
+      .catch(error => error);
   }, [id]);
 
   return (
@@ -208,7 +212,7 @@ const GrantGrid: React.FC<{ grant: Grant; expenses: Expense[] }> = ({
         )}
         {grant.dateWhenFundsWereReceived && (
           <DataBox
-            title={'Date When Funds Were Received'}
+            title={'Fund Receipt Date'}
             data={grant.dateWhenFundsWereReceived}
           />
         )}
@@ -217,7 +221,7 @@ const GrantGrid: React.FC<{ grant: Grant; expenses: Expense[] }> = ({
         )}
         {grant.sponsoringAgency && (
           <DataBox
-            title={'Sponsoring Agency'}
+            title={'Sponsoring Agency (Grantor)'}
             data={grant.sponsoringAgency}
             link={grant.applicationUrl}
           />
@@ -264,10 +268,43 @@ const DataBox: React.FC<{ title: string; data: string; link?: string }> = ({
           </h3>
         )}
         {title === 'Status' && data === 'Pending' && (
+          <h3 className="px-2 inline-flex text-md leading-5 font-semibold rounded-full bg-blue-100 text-blue-700">
+            {data}
+          </h3>
+        )}
+        {title === 'Status' && data === 'Declined' && (
+          <h3 className="px-2 inline-flex text-md leading-5 font-semibold rounded-full bg-red-200 text-red-700">
+            {data}
+          </h3>
+        )}
+        {title === 'Status' && data === 'Missed Deadline' && (
+          <h3 className="px-2 inline-flex text-md leading-5 font-semibold rounded-full bg-red-100 text-yellow-800">
+            {data}
+          </h3>
+        )}
+        {title === 'Status' && data === 'Incomplete' && (
+          <h3 className="px-2 inline-flex text-md leading-5 font-semibold rounded-full bg-cyan-200 text-cyan-900">
+            {data}
+          </h3>
+        )}
+        {title === 'Status' && data === 'Inactive' && (
           <h3 className="px-2 inline-flex text-md leading-5 font-semibold rounded-full bg-gray-300 text-gray-800">
             {data}
           </h3>
         )}
+        {title === 'Status' &&
+          ![
+            'Approved',
+            'Pending',
+            'Incomplete',
+            'Inactive',
+            'Declined',
+            'Missed Deadline',
+          ].includes(data) && (
+            <h3 className="inline-flex text-md leading-5 font-semibold rounded-full">
+              {data}
+            </h3>
+          )}
       </div>
     </div>
   );

@@ -27,9 +27,11 @@ interface AuthContextData {
   updateUser(user: User): void;
 }
 
-const AuthContext = createContext<AuthContextData>({} as AuthContextData);
+const AuthenticationContext = createContext<AuthContextData>(
+  {} as AuthContextData,
+);
 
-const AuthProvider: React.FC = ({ children }) => {
+const AuthenticationProvider: React.FC = ({ children }) => {
   const [data, setData] = useState<AuthState>(() => {
     const token = localStorage.getItem('@Grantify:token');
     const user = localStorage.getItem('@Grantify:user');
@@ -52,6 +54,8 @@ const AuthProvider: React.FC = ({ children }) => {
 
     localStorage.setItem('@Grantify:token', token);
     localStorage.setItem('@Grantify:user', JSON.stringify(user));
+
+    api.defaults.headers.authorization = `Bearer ${token}`;
 
     setData({ token, user });
   }, []);
@@ -76,7 +80,7 @@ const AuthProvider: React.FC = ({ children }) => {
   );
 
   return (
-    <AuthContext.Provider
+    <AuthenticationContext.Provider
       value={{
         user: data.user,
         token: data.token,
@@ -86,12 +90,12 @@ const AuthProvider: React.FC = ({ children }) => {
       }}
     >
       {children}
-    </AuthContext.Provider>
+    </AuthenticationContext.Provider>
   );
 };
 
 function useAuth(): AuthContextData {
-  const context = useContext(AuthContext);
+  const context = useContext(AuthenticationContext);
 
   if (!context) {
     throw new Error('useAuth must be used within an AuthProvider');
@@ -100,4 +104,4 @@ function useAuth(): AuthContextData {
   return context;
 }
 
-export { AuthProvider, useAuth };
+export { AuthenticationProvider, useAuth };

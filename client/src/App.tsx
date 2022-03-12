@@ -9,13 +9,13 @@ import Routes from './routes';
 
 const App: React.FC = () => {
   return (
-      <BrowserRouter>
-        <AppProvider>
-          <Routes />
-        </AppProvider>
+    <BrowserRouter>
+      <AppProvider>
+        <Routes />
+      </AppProvider>
 
-        <GlobalStyle />
-      </BrowserRouter>
+      <GlobalStyle />
+    </BrowserRouter>
   );
 };
 
