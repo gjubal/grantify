@@ -31,6 +31,7 @@ import { useToast } from '../../hooks/toast';
 import { FormHandles } from '@unform/core';
 import getValidationErrors from '../../utils/getValidationErrors';
 import formatCurrency from '../../utils/formatCurrency';
+import Accordion from '../../components/Accordion';
 
 const GrantView: React.FC = () => {
   const [grant, setGrant] = useState<Grant>();
@@ -326,11 +327,21 @@ const ExpensesBreakdown: React.FC<{
       <ExpenseContainer>
         <div className="bg-white my-4 p-6 rounded-xl mx-2 shadow-lg">
           <div className="flex justify-between mb-3">
-            <h3 className="text-gray-500 text-md">Expense</h3>
-            <h3 className="text-gray-500 text-md">Line Item</h3>
-            <h3 className="text-gray-500 text-md">Budget</h3>
-            <h3 className="text-gray-500 text-md">Amount Spent</h3>
-            <h3 className="text-gray-500 text-md">Date</h3>
+            <h3 className="text-gray-500 text-md flex items-center">Expense</h3>
+            <div className="flex flex-col">
+              <h3 className="text-gray-500 text-md">Line</h3>
+              <h3 className="text-gray-500 text-md">Item</h3>
+            </div>
+            <h3 className="text-gray-500 text-md flex items-center">Budget</h3>
+            <div className="flex flex-col">
+              <h3 className="text-gray-500 text-md">Amount</h3>
+              <h3 className="text-gray-500 text-md">Spent</h3>
+            </div>
+            <div className="flex flex-col">
+              <h3 className="text-gray-500 text-md">Remaining</h3>
+              <h3 className="text-gray-500 text-md">Balance</h3>
+            </div>
+            <h3 className="text-gray-500 text-md flex items-center">Date</h3>
             <button
               type="button"
               onClick={() => setOpen(true)}
@@ -377,39 +388,47 @@ const ExpenseRow: React.FC<{ expense: Expense; deleteExpense: any }> = ({
   deleteExpense,
 }) => {
   return (
-    <ExpenseRowContainer>
-      <Entry width="4" justification="start">
-        {expense.name}
-      </Entry>
-      <Entry width="1" justification="center">
-        {expense.lineItemCode}
-      </Entry>
-      <Entry width="4" justification="end">
-        ${formatCurrency(expense.budget)}
-      </Entry>
-      <Entry width="5" justification="center">
-        ${formatCurrency(expense.amountSpent)}
-      </Entry>
-      <Entry width="0" justification="center">
-        {expense.date}
-      </Entry>
+    <>
+      <ExpenseRowContainer>
+        <Entry width="3" justification="start">
+          {expense.name}
+        </Entry>
+        <Entry width="2" justification="center">
+          {expense.lineItemCode}
+        </Entry>
+        <Entry width="2" justification="end">
+          ${formatCurrency(expense.budget)}
+        </Entry>
+        <Entry width="3" justification="end">
+          ${formatCurrency(expense.amountSpent)}
+        </Entry>
+        <Entry width="3" justification="end">
+          $
+          {formatCurrency(
+            Number((expense.budget - expense.amountSpent).toFixed(2)),
+          )}
+        </Entry>
+        <Entry width="0" justification="center">
+          {expense.date}
+        </Entry>
 
-      <ButtonSpan>
-        <button
-          type="button"
-          onClick={() => {
-            // eslint-disable-next-line no-restricted-globals
-            const option = confirm(
-              `Are you sure you want to delete the expense ${expense.name}? This action cannot be reversed`,
-            );
-            option && deleteExpense(expense.grantId, expense.id);
-          }}
-          className="text-indigo-600 hover:text-indigo-900"
-        >
-          x
-        </button>
-      </ButtonSpan>
-    </ExpenseRowContainer>
+        <ButtonSpan>
+          <button
+            type="button"
+            onClick={() => {
+              // eslint-disable-next-line no-restricted-globals
+              const option = confirm(
+                `Are you sure you want to delete the expense ${expense.name}? This action cannot be reversed`,
+              );
+              option && deleteExpense(expense.grantId, expense.id);
+            }}
+            className="text-indigo-600 hover:text-indigo-900"
+          >
+            x
+          </button>
+        </ButtonSpan>
+      </ExpenseRowContainer>
+    </>
   );
 };
 

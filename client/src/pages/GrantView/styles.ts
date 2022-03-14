@@ -6,7 +6,7 @@ interface EntryProps {
 }
 
 export const ExpenseContainer = styled.section`
-  width: 720px;
+  width: 770px;
 `;
 
 export const ExpenseRowContainer = styled.div`
