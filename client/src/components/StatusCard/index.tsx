@@ -69,9 +69,7 @@ const TooltipHolder: React.FC<{
     <div className="status-holder group">
       {title}
       {tooltipText && (
-        <span className="status-tooltip group-hover:scale-100">
-          {tooltipText}
-        </span>
+        <h3 className="status-tooltip group-hover:scale-100">{tooltipText}</h3>
       )}
     </div>
   );

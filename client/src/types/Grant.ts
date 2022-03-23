@@ -11,5 +11,6 @@ export type Grant = {
   sponsoringAgency?: string;
   dateWhenFundsWereReceived?: string;
   expirationDate?: string;
+  notes?: string;
   updatedAt?: string;
 };

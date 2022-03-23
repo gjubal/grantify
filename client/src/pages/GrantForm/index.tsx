@@ -14,6 +14,7 @@ import { Content, Section } from './styles';
 import convertFromTimestampToString from '../../utils/convertFromTimestampToString';
 import convertFromStringToTimestamp from '../../utils/convertFromStringToTimestamp';
 import Button from '../../components/Button';
+import Textarea from '../../components/Textarea';
 
 const GrantForm: React.FC = () => {
   const { signOut } = useAuth();
@@ -50,6 +51,7 @@ const FormFields: React.FC = () => {
   const [writerName, setWriterName] = useState('');
   const [applicationUrl, setApplicationUrl] = useState('');
   const [sponsoringAgency, setSponsoringAgency] = useState('');
+  const [notes, setNotes] = useState('');
   const { addToast } = useToast();
   const history = useHistory();
   const formRef = useRef<FormHandles>(null);
@@ -75,6 +77,7 @@ const FormFields: React.FC = () => {
           sponsoringAgency: Yup.string(),
           dateWhenFundsWereReceived: Yup.string(),
           expirationDate: Yup.string(),
+          notes: Yup.string(),
         });
 
         await schema.validate(data, { abortEarly: false });
@@ -103,6 +106,7 @@ const FormFields: React.FC = () => {
               sponsoringAgency,
               dateWhenFundsWereReceived,
               expirationDate,
+              notes,
             };
 
             await api.put(`/grants/${id}`, formData);
@@ -137,6 +141,9 @@ const FormFields: React.FC = () => {
             }),
             ...(expirationDate && {
               expirationDate: convertFromStringToTimestamp(data.expirationDate),
+            }),
+            ...(notes && {
+              notes: data.notes,
             }),
           };
 
@@ -179,6 +186,7 @@ const FormFields: React.FC = () => {
       grantName,
       history,
       id,
+      notes,
       openDate,
       sponsoringAgency,
       status,
@@ -205,6 +213,7 @@ const FormFields: React.FC = () => {
             applicationUrl,
             sponsoringAgency,
             status,
+            notes,
           } = response.data;
 
           setGrantName(grantName);
@@ -222,6 +231,7 @@ const FormFields: React.FC = () => {
             );
           if (expirationDate)
             setExpirationDate(convertFromTimestampToString(expirationDate));
+          if (notes) setNotes(notes);
         })
         .catch(error => {
           if (error.response.status === 401) {
@@ -324,6 +334,14 @@ const FormFields: React.FC = () => {
                 placeholder="01/15/2023"
                 value={id && expirationDate}
                 onChange={e => setExpirationDate(e.target.value)}
+              />
+
+              <Textarea
+                name="notes"
+                label="Notes (optional)"
+                placeholder="..."
+                value={id && notes}
+                onChange={e => setNotes(e.target.value)}
               />
 
               {id && (

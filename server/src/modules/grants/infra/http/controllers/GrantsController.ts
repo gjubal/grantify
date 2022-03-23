@@ -39,6 +39,7 @@ export default class GrantsController {
       sponsoringAgency,
       dateWhenFundsWereReceived,
       expirationDate,
+      notes,
     } = request.body;
 
     const createGrant = container.resolve(CreateGrantService);
@@ -55,6 +56,7 @@ export default class GrantsController {
       sponsoringAgency,
       dateWhenFundsWereReceived,
       expirationDate,
+      notes,
     });
 
     return response.json(grant);
@@ -74,6 +76,7 @@ export default class GrantsController {
       sponsoringAgency,
       dateWhenFundsWereReceived,
       expirationDate,
+      notes,
     } = request.body;
 
     const updateGrant = container.resolve(UpdateGrantService);
@@ -91,6 +94,7 @@ export default class GrantsController {
       sponsoringAgency,
       dateWhenFundsWereReceived,
       expirationDate,
+      notes,
     });
 
     return response.json(grant);

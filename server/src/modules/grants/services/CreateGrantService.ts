@@ -16,6 +16,7 @@ interface IRequest {
   sponsoringAgency: string;
   dateWhenFundsWereReceived: Date;
   expirationDate: Date;
+  notes: string;
 }
 
 @injectable()
@@ -37,6 +38,7 @@ export default class CreateGrantService {
     sponsoringAgency,
     dateWhenFundsWereReceived,
     expirationDate,
+    notes,
   }: IRequest): Promise<Grant | undefined> {
     const checkIfGrantNameExists = await this.grantsRepository.findByGrantName(
       grantName,
@@ -58,6 +60,7 @@ export default class CreateGrantService {
       sponsoringAgency,
       dateWhenFundsWereReceived,
       expirationDate,
+      notes,
     });
 
     return grant;

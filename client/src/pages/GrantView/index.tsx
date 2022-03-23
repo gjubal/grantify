@@ -25,13 +25,17 @@ import {
   Entry,
   ExpenseContainer,
   ExpenseRowContainer,
+  NotesContainer,
 } from './styles';
 import { Expense } from '../../types/Expense';
 import { useToast } from '../../hooks/toast';
 import { FormHandles } from '@unform/core';
 import getValidationErrors from '../../utils/getValidationErrors';
 import formatCurrency from '../../utils/formatCurrency';
-import Accordion from '../../components/Accordion';
+import StatusCard from '../../components/StatusCard';
+import MenuIcon from '../../components/MenuIcon';
+import { FiInfo } from 'react-icons/fi';
+import MenuInfoMap from '../../types/MenuInfoMap';
 
 const GrantView: React.FC = () => {
   const [grant, setGrant] = useState<Grant>();
@@ -169,6 +173,7 @@ const GrantView: React.FC = () => {
                   formRef={formRef}
                 />
               )}
+              <NotesSection text={grant.notes} />
             </div>
           </div>
         </div>
@@ -234,15 +239,18 @@ const GrantGrid: React.FC<{ grant: Grant; expenses: Expense[] }> = ({
   );
 };
 
-const DataBox: React.FC<{ title: string; data: string; link?: string }> = ({
-  title,
-  data,
-  link,
-}) => {
+const DataBox: React.FC<{
+  title: string;
+  data: string;
+  link?: string;
+}> = ({ title, data, link }) => {
   return (
     <div className="bg-white my-4 p-6 rounded-xl mx-2 shadow-md">
-      <div className="text-gray-500 mb-3">
+      <div className="flex flex-row items-center text-gray-500 mb-3">
         <h4>{title}</h4>
+        {MenuInfoMap.get(title) && (
+          <MenuIcon icon={<FiInfo size={14} />} text={MenuInfoMap.get(title)} />
+        )}
       </div>
       <div>
         {!!Date.parse(data) && isNaN(Number(data)) && (
@@ -268,49 +276,9 @@ const DataBox: React.FC<{ title: string; data: string; link?: string }> = ({
           </h3>
         )}
 
-        {title === 'Status' && data === 'Approved' && (
-          <h3 className="px-2 inline-flex text-md leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-            {data}
-          </h3>
-        )}
-        {title === 'Status' && data === 'Pending' && (
-          <h3 className="px-2 inline-flex text-md leading-5 font-semibold rounded-full bg-blue-100 text-blue-700">
-            {data}
-          </h3>
-        )}
-        {title === 'Status' && data === 'Declined' && (
-          <h3 className="px-2 inline-flex text-md leading-5 font-semibold rounded-full bg-red-200 text-red-700">
-            {data}
-          </h3>
-        )}
-        {title === 'Status' && data === 'Missed Deadline' && (
-          <h3 className="px-2 inline-flex text-md leading-5 font-semibold rounded-full bg-red-100 text-yellow-800">
-            {data}
-          </h3>
-        )}
-        {title === 'Status' && data === 'Incomplete' && (
-          <h3 className="px-2 inline-flex text-md leading-5 font-semibold rounded-full bg-cyan-200 text-cyan-900">
-            {data}
-          </h3>
-        )}
-        {title === 'Status' && data === 'Inactive' && (
-          <h3 className="px-2 inline-flex text-md leading-5 font-semibold rounded-full bg-gray-300 text-gray-800">
-            {data}
-          </h3>
-        )}
-        {title === 'Status' &&
-          ![
-            'Approved',
-            'Pending',
-            'Incomplete',
-            'Inactive',
-            'Declined',
-            'Missed Deadline',
-          ].includes(data) && (
-            <h3 className="inline-flex text-md leading-5 font-semibold rounded-full">
-              {data}
-            </h3>
-          )}
+        {title === 'Status' && <StatusCard text={data} />}
+
+        {title === 'Notes' && <p>{data}</p>}
       </div>
     </div>
   );
@@ -475,6 +443,27 @@ const AddExpenseForm: React.FC<{
         </div>
       </section>
     </AnimationContainer>
+  );
+};
+
+const NotesSection: React.FC<{ text?: string }> = ({ text }) => {
+  return (
+    <>
+      {text && (
+        <div className="flex flex-col justify-center items-center my-4 py-4">
+          <h4 className="content-title">Notes</h4>
+
+          <NotesContainer>
+            <div className="bg-white my-4 p-6 rounded-xl mx-2 shadow-md">
+              <div className="text-gray-500 mb-3"></div>
+              <div>
+                <p>{text}</p>
+              </div>
+            </div>
+          </NotesContainer>
+        </div>
+      )}
+    </>
   );
 };
 

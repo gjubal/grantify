@@ -17,6 +17,7 @@ interface IRequest {
   sponsoringAgency?: string;
   dateWhenFundsWereReceived?: Date;
   expirationDate?: Date;
+  notes?: string;
 }
 
 @injectable()
@@ -39,6 +40,7 @@ export default class UpdateGrantService {
     sponsoringAgency,
     dateWhenFundsWereReceived,
     expirationDate,
+    notes,
   }: IRequest): Promise<Grant | undefined> {
     const grant = await this.grantsRepository.findById(id);
 
@@ -58,6 +60,7 @@ export default class UpdateGrantService {
     dateWhenFundsWereReceived &&
       (grant.dateWhenFundsWereReceived = dateWhenFundsWereReceived);
     expirationDate && (grant.expirationDate = expirationDate);
+    notes && (grant.notes = notes);
 
     await this.grantsRepository.save(grant);
 

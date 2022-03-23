@@ -5,6 +5,10 @@ interface EntryProps {
   justification: 'center' | 'start' | 'end';
 }
 
+export const DataboxContainer = styled.div`
+  width: 300px;
+`;
+
 export const ExpenseContainer = styled.section`
   width: 770px;
 `;
@@ -39,4 +43,9 @@ const appearFromBottom = keyframes`
 export const AnimationContainer = styled.div`
   width: 720px;
   animation: ${appearFromBottom} 1s;
+`;
+
+export const NotesContainer = styled.div`
+  width: 770px;
+  margin-top: 1rem;
 `;

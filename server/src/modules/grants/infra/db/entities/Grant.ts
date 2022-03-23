@@ -54,6 +54,9 @@ export default class Grant extends BaseEntity {
   @OneToMany(() => Attachment, attachment => attachment.grant)
   attachments: Attachment[];
 
+  @Column({ type: 'text', nullable: true })
+  notes: string;
+
   @CreateDateColumn()
   createdAt: Date;
 

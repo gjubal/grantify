@@ -29,6 +29,7 @@ grantsRouter.post(
       sponsoringAgency: Joi.string(),
       dateWhenFundsWereReceived: Joi.date(),
       expirationDate: Joi.date(),
+      notes: Joi.string(),
     },
   }),
   grantsController.create,
