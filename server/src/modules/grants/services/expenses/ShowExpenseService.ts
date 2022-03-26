@@ -1,9 +1,8 @@
 import { inject, injectable } from 'tsyringe';
-
-import IGrantsRepository from '../infra/db/repositories/interfaces/IGrantsRepository';
-import AppError from '../../../common/errors/AppError';
-import IExpensesRepository from '../infra/db/repositories/interfaces/IExpensesRepository';
-import Expense from '../infra/db/entities/Expense';
+import AppError from '../../../../common/errors/AppError';
+import Expense from '../../infra/db/entities/Expense';
+import IExpensesRepository from '../../infra/db/repositories/interfaces/IExpensesRepository';
+import IGrantsRepository from '../../infra/db/repositories/interfaces/IGrantsRepository';
 
 interface IRequest {
   id: string;

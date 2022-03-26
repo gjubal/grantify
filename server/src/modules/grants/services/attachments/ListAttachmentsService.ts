@@ -1,9 +1,8 @@
 import { inject, injectable } from 'tsyringe';
-
-import IGrantsRepository from '../infra/db/repositories/interfaces/IGrantsRepository';
-import AppError from '../../../common/errors/AppError';
-import IAttachmentsRepository from '../infra/db/repositories/interfaces/IAttachmentsRepository';
-import Attachment from '../infra/db/entities/Attachment';
+import AppError from '../../../../common/errors/AppError';
+import Attachment from '../../infra/db/entities/Attachment';
+import IAttachmentsRepository from '../../infra/db/repositories/interfaces/IAttachmentsRepository';
+import IGrantsRepository from '../../infra/db/repositories/interfaces/IGrantsRepository';
 
 @injectable()
 export default class ListAttachmentsService {

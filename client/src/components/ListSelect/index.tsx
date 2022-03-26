@@ -22,7 +22,7 @@ const ListSelect: React.FC<SelectProps> = ({
     <SelectBlock>
       <label htmlFor={name}>{label}</label>
       <select id={name} {...rest}>
-        <option selected disabled hidden>
+        <option disabled hidden>
           {isQuantityCounter ? 'Quantity' : 'Select an option'}
         </option>
         {options.map(option => (

@@ -1,16 +1,15 @@
 import { inject, injectable } from 'tsyringe';
-
-import IGrantsRepository from '../infra/db/repositories/interfaces/IGrantsRepository';
-import AppError from '../../../common/errors/AppError';
-import IAttachmentsRepository from '../infra/db/repositories/interfaces/IAttachmentsRepository';
-import Attachment from '../infra/db/entities/Attachment';
+import AppError from '../../../../common/errors/AppError';
+import Attachment from '../../infra/db/entities/Attachment';
+import IAttachmentsRepository from '../../infra/db/repositories/interfaces/IAttachmentsRepository';
+import IGrantsRepository from '../../infra/db/repositories/interfaces/IGrantsRepository';
 
 interface IRequest {
   id: string;
 }
 
 @injectable()
-export default class ShowAttachmentService {
+export default class RemoveAttachmentService {
   constructor(
     @inject('GrantsRepository')
     private grantsRepository: IGrantsRepository,
@@ -23,8 +22,10 @@ export default class ShowAttachmentService {
     const attachment = await this.attachmentsRepository.findById(id);
 
     if (!attachment) {
-      throw new AppError('An attachment with the given id does not exist.');
+      throw new AppError('An attachment with the id provided does not exist.');
     }
+
+    await this.attachmentsRepository.delete(attachment);
 
     return attachment;
   }

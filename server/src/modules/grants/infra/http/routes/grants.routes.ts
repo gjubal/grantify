@@ -40,6 +40,7 @@ grantsRouter.delete('/:id', can('deleteGrant'), grantsController.destroy);
 
 // expense routes
 grantsRouter.get('/view/:grantId', expensesController.index);
+grantsRouter.get('/view/:grantId/search', expensesController.query);
 grantsRouter.get('/view/:grantId/:expenseId', expensesController.show);
 grantsRouter.post(
   '/view/:grantId',

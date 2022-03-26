@@ -1,24 +1,24 @@
-import AppError from '../../../common/errors/AppError';
-import FakeAttachmentsRepository from '../infra/db/repositories/fakes/FakeAttachmentsRepository';
-import FakeGrantsRepository from '../infra/db/repositories/fakes/FakeGrantsRepository';
-import ShowAttachmentService from './ShowAttachmentService';
+import AppError from '../../../../common/errors/AppError';
+import FakeExpensesRepository from '../../infra/db/repositories/fakes/FakeExpensesRepository';
+import FakeGrantsRepository from '../../infra/db/repositories/fakes/FakeGrantsRepository';
+import ShowExpenseService from './ShowExpenseService';
 
 let fakeGrantsRepository: FakeGrantsRepository;
-let fakeAttachmentsRepository: FakeAttachmentsRepository;
-let showAttachment: ShowAttachmentService;
+let fakeExpensesRepository: FakeExpensesRepository;
+let showExpense: ShowExpenseService;
 
-describe('ShowAttachment', () => {
+describe('ShowExpense', () => {
   beforeEach(() => {
     fakeGrantsRepository = new FakeGrantsRepository();
-    fakeAttachmentsRepository = new FakeAttachmentsRepository();
+    fakeExpensesRepository = new FakeExpensesRepository();
 
-    showAttachment = new ShowAttachmentService(
+    showExpense = new ShowExpenseService(
       fakeGrantsRepository,
-      fakeAttachmentsRepository,
+      fakeExpensesRepository,
     );
   });
 
-  it('should be able to show an attachment based on its id', async () => {
+  it('should be able to show an expense based on its id', async () => {
     const g = await fakeGrantsRepository.create({
       grantName: 'COVID Grant Fall 2021',
       openDate: new Date('2021-10-18T03:24:00'),
@@ -31,20 +31,24 @@ describe('ShowAttachment', () => {
       sponsoringAgency: 'Wayne Enterprises',
       dateWhenFundsWereReceived: new Date('2021-10-21T03:24:00'),
       expirationDate: new Date('2021-12-30T03:24:00'),
+      notes: 'Lorem ipsum',
     });
 
-    const a = await fakeAttachmentsRepository.create({
+    const e = await fakeExpensesRepository.create({
       name: 'Salaries',
-      link: 'google.com',
+      lineItemCode: 1,
+      budget: 3000,
+      amountSpent: 400.59,
+      date: '06/2021',
       grantId: g.id,
     });
 
-    const attachment = await showAttachment.execute({ id: a.id });
+    const expense = await showExpense.execute({ id: e.id });
 
-    expect(attachment?.id).toEqual(a.id);
+    expect(expense?.id).toEqual(e.id);
   });
 
-  it('should not show an attachment whose id does not exist', async () => {
+  it('should not show an expense whose id does not exist', async () => {
     const grant = await fakeGrantsRepository.create({
       grantName: 'SG Grant Fall 2021',
       openDate: new Date('2021-10-18T03:24:00'),
@@ -57,16 +61,20 @@ describe('ShowAttachment', () => {
       sponsoringAgency: 'Wayne Enterprises',
       dateWhenFundsWereReceived: new Date('2021-10-21T03:24:00'),
       expirationDate: new Date('2021-12-30T03:24:00'),
+      notes: 'Lorem ipsum',
     });
 
-    await fakeAttachmentsRepository.create({
+    const e = await fakeExpensesRepository.create({
       name: 'Salaries',
-      link: 'google.com',
+      lineItemCode: 1,
+      budget: 3000,
+      amountSpent: 400.59,
+      date: '06/2021',
       grantId: grant.id,
     });
 
-    await expect(
-      showAttachment.execute({ id: '123456' }),
-    ).rejects.toBeInstanceOf(AppError);
+    await expect(showExpense.execute({ id: '123456' })).rejects.toBeInstanceOf(
+      AppError,
+    );
   });
 });

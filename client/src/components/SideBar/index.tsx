@@ -77,8 +77,6 @@ const SideBar: React.FC<{ signOut(): void }> = ({ signOut }) => {
             text="View all grants"
           />
         </Link>
-        {/* <SideBarIcon icon={<FaCalendar size="20" />} text="Calendar" /> */}
-        {/* <SideBarIcon icon={<BsPeopleFill size="20" />} text="Grantors" /> */}
         <Link to="/users">
           <SideBarIcon
             icon={<BsPeopleFill size="20" />}

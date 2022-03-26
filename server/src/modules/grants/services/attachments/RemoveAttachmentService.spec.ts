@@ -1,6 +1,6 @@
-import AppError from '../../../common/errors/AppError';
-import FakeAttachmentsRepository from '../infra/db/repositories/fakes/FakeAttachmentsRepository';
-import FakeGrantsRepository from '../infra/db/repositories/fakes/FakeGrantsRepository';
+import AppError from '../../../../common/errors/AppError';
+import FakeAttachmentsRepository from '../../infra/db/repositories/fakes/FakeAttachmentsRepository';
+import FakeGrantsRepository from '../../infra/db/repositories/fakes/FakeGrantsRepository';
 import RemoveAttachmentService from './RemoveAttachmentService';
 
 let fakeGrantsRepository: FakeGrantsRepository;
@@ -39,6 +39,7 @@ describe('RemoveAttachment', () => {
       sponsoringAgency: 'Wayne Enterprises',
       dateWhenFundsWereReceived: new Date('2021-10-21T03:24:00'),
       expirationDate: new Date('2021-12-30T03:24:00'),
+      notes: 'Lorem ipsum',
     });
 
     const a = await fakeAttachmentsRepository.create({

@@ -1,6 +1,4 @@
-import ICreateGrantDTO from '../../../../../modules/grants/dtos/ICreateGrantDTO';
 import { getRepository, Repository } from 'typeorm';
-import Grant from '../entities/Grant';
 
 import IExpensesRepository from './interfaces/IExpensesRepository';
 import Expense from '../entities/Expense';
@@ -21,6 +19,17 @@ export default class ExpensesRepository implements IExpensesRepository {
 
   public async findAllByGrantId(id: string): Promise<Expense[]> {
     const expenses = await this.ormRepository.find({ where: { grantId: id } });
+
+    return expenses;
+  }
+
+  public async queryByFilters(name: string, date: string): Promise<Expense[]> {
+    const expenses = await this.ormRepository.find({
+      where: {
+        name,
+        date,
+      },
+    });
 
     return expenses;
   }

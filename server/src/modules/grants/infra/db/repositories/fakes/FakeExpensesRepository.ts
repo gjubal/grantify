@@ -17,6 +17,14 @@ export default class FakeExpensesRepository implements IExpensesRepository {
     return this.expenses.filter(e => e.grantId === id);
   }
 
+  public async queryByFilters(name: string, date: string): Promise<Expense[]> {
+    const expenses = this.expenses.filter(
+      expense => expense.name === name && expense.date === date,
+    );
+
+    return expenses;
+  }
+
   public async create(expenseData: ICreateExpenseDTO): Promise<Expense> {
     const expense = new Expense();
 

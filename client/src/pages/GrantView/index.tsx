@@ -25,6 +25,8 @@ import {
   Entry,
   ExpenseContainer,
   ExpenseRowContainer,
+  FormContainer,
+  FormDivider,
   NotesContainer,
 } from './styles';
 import { Expense } from '../../types/Expense';
@@ -36,6 +38,8 @@ import StatusCard from '../../components/StatusCard';
 import MenuIcon from '../../components/MenuIcon';
 import { FiInfo } from 'react-icons/fi';
 import MenuInfoMap from '../../types/MenuInfoMap';
+import ListInput from '../../components/ListInput';
+import ListSelect from '../../components/ListSelect';
 
 const GrantView: React.FC = () => {
   const [grant, setGrant] = useState<Grant>();
@@ -44,7 +48,8 @@ const GrantView: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { signOut } = useAuth();
   const { addToast } = useToast();
-  const formRef = useRef<FormHandles>(null);
+  const addExpenseFormRef = useRef<FormHandles>(null);
+  const searchExpensesFormRef = useRef<FormHandles>(null);
 
   const deleteExpense = useCallback(
     (grantId: string, expenseId: string) => {
@@ -69,7 +74,7 @@ const GrantView: React.FC = () => {
   const onSubmit = useCallback(
     async (data: Expense) => {
       try {
-        formRef.current?.setErrors({});
+        addExpenseFormRef.current?.setErrors({});
 
         const schema = Yup.object().shape({
           name: Yup.string().required('Expense name is required'),
@@ -119,7 +124,7 @@ const GrantView: React.FC = () => {
         if (err instanceof Yup.ValidationError) {
           const errors = getValidationErrors(err);
 
-          formRef.current?.setErrors(errors);
+          addExpenseFormRef.current?.setErrors(errors);
           return;
         }
 
@@ -163,14 +168,16 @@ const GrantView: React.FC = () => {
               </div>
               <ExpensesBreakdown
                 expenses={expenses}
+                setExpenses={setExpenses}
                 setOpen={setOpen}
                 deleteExpense={deleteExpense}
+                searchExpensesFormRef={searchExpensesFormRef}
               />
               {open && (
                 <AddExpenseForm
                   setOpen={setOpen}
                   onSubmit={onSubmit}
-                  formRef={formRef}
+                  addExpenseFormRef={addExpenseFormRef}
                 />
               )}
               <NotesSection text={grant.notes} />
@@ -286,16 +293,100 @@ const DataBox: React.FC<{
 
 const ExpensesBreakdown: React.FC<{
   expenses: Expense[];
+  setExpenses: Dispatch<SetStateAction<Expense[]>>;
   setOpen: Dispatch<SetStateAction<boolean>>;
   deleteExpense: any;
-}> = ({ expenses, setOpen, deleteExpense }) => {
+  searchExpensesFormRef: any;
+}> = ({ expenses, setExpenses, setOpen, deleteExpense }) => {
+  const [expenseName, setExpenseName] = useState('');
+  const [month, setMonth] = useState('');
+  const [year, setYear] = useState('');
+  const { id } = useParams<{ id: string }>();
+
+  const replaceWithOriginalExpenses = useCallback(async () => {
+    const originalExpenses = await api
+      .get<Expense[]>(`grants/view/${id}`)
+      .then(response => response.data)
+      .catch(error => error);
+
+    setExpenses(originalExpenses);
+  }, [id, setExpenses]);
+
+  const searchExpenses = useCallback(async () => {
+    const filteredExpenses = expenses.filter(
+      expense =>
+        expense.name.toLowerCase().trim().includes(expenseName.toLowerCase()) &&
+        expense.date.trim() ===
+          `${month.length === 1 ? `0${month}` : month}/${year}`,
+    );
+
+    setExpenses(filteredExpenses);
+  }, [expenseName, expenses, month, setExpenses, year]);
+
   return (
     <>
       <h1 className="content-title">Expenses</h1>
+      <FormContainer>
+        <Form
+          onSubmit={searchExpenses}
+          className="flex flex-row items-center p-6 mx-2"
+        >
+          <ListInput
+            name="expenseName"
+            label="Expense name"
+            value={expenseName}
+            onChange={e => setExpenseName(e.currentTarget.value)}
+          />
+          <div className="mx-2" />
+          <ListSelect
+            name="month"
+            label="Month"
+            value={month}
+            onChange={e => setMonth(e.currentTarget.value)}
+            options={[
+              { value: '', label: '' },
+              { value: '1', label: '1' },
+              { value: '2', label: '2' },
+              { value: '3', label: '3' },
+              { value: '4', label: '4' },
+              { value: '5', label: '5' },
+              { value: '6', label: '6' },
+              { value: '7', label: '7' },
+              { value: '8', label: '8' },
+              { value: '9', label: '9' },
+              { value: '10', label: '10' },
+              { value: '11', label: '11' },
+              { value: '12', label: '12' },
+            ]}
+          />
+          <div className="mx-2" />
+          <ListInput
+            name="year"
+            label="Year"
+            value={year}
+            onChange={e => setYear(e.currentTarget.value)}
+          />
+          <div className="mx-2" />
+          <div className="w-24 relative">
+            <Button type="submit">Search</Button>
+          </div>
+          <div className="mx-2" />
+          <div className="w-24 relative">
+            <Button type="button" onClick={replaceWithOriginalExpenses}>
+              Reset
+            </Button>
+          </div>
+        </Form>
+      </FormContainer>
       <ExpenseContainer>
-        <div className="bg-white my-4 p-6 rounded-xl mx-2 shadow-lg">
+        <div className="bg-white my-4 p-6 rounded-xl mx-2 shadow-md">
+          <FormDivider />
           <div className="flex justify-between mb-3">
-            <h3 className="text-gray-500 text-md flex items-center">Expense</h3>
+            <div className="text-gray-500 text-md flex items-center">
+              <Entry width="10">
+                <h3>Expense</h3>
+              </Entry>
+            </div>
             <div className="flex flex-col">
               <h3 className="text-gray-500 text-md">Line</h3>
               <h3 className="text-gray-500 text-md">Item</h3>
@@ -358,28 +449,25 @@ const ExpenseRow: React.FC<{ expense: Expense; deleteExpense: any }> = ({
   return (
     <>
       <ExpenseRowContainer>
-        <Entry width="3" justification="start">
-          {expense.name}
-        </Entry>
-        <Entry width="2" justification="center">
+        <Entry width="10">{expense.name}</Entry>
+        <Entry width="1" ml="1.3">
           {expense.lineItemCode}
         </Entry>
-        <Entry width="2" justification="end">
+        <Entry width="4" ml="1">
           ${formatCurrency(expense.budget)}
         </Entry>
-        <Entry width="3" justification="end">
+        <Entry width="4" ml="0">
           ${formatCurrency(expense.amountSpent)}
         </Entry>
-        <Entry width="3" justification="end">
+        <Entry width="4" ml="0.5">
           $
           {formatCurrency(
             Number((expense.budget - expense.amountSpent).toFixed(2)),
           )}
         </Entry>
-        <Entry width="0" justification="center">
+        <Entry width="4" ml="1.1">
           {expense.date}
         </Entry>
-
         <ButtonSpan>
           <button
             type="button"
@@ -403,12 +491,12 @@ const ExpenseRow: React.FC<{ expense: Expense; deleteExpense: any }> = ({
 const AddExpenseForm: React.FC<{
   setOpen: Dispatch<SetStateAction<boolean>>;
   onSubmit: any;
-  formRef: any;
-}> = ({ setOpen, onSubmit, formRef }) => {
+  addExpenseFormRef: any;
+}> = ({ setOpen, onSubmit, addExpenseFormRef }) => {
   return (
     <AnimationContainer>
       <section className="grid grid-cols-1">
-        <div className="bg-white my-4 p-6 rounded-xl mx-2 shadow-lg">
+        <div className="bg-white my-4 p-6 rounded-xl mx-2 shadow-md">
           <div className="">
             <div className="flex justify-between mb-3">
               <h3 className="text-gray-700">Add a new expense</h3>
@@ -422,7 +510,7 @@ const AddExpenseForm: React.FC<{
             </div>
             <Divider />
             <div className="flex flex-col my-4">
-              <Form onSubmit={onSubmit} ref={formRef}>
+              <Form onSubmit={onSubmit} ref={addExpenseFormRef}>
                 <Input name="name" label="Name" placeholder="Salaries" />
                 <Input
                   name="lineItemCode"

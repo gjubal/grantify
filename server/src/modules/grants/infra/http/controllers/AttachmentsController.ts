@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
 import { container } from 'tsyringe';
-import ListAttachmentsService from '../../../services/ListAttachmentsService';
-import ShowAttachmentService from '../../../services/ShowAttachmentService';
-import CreateAttachmentService from '../../../services/CreateAttachmentService';
-import RemoveAttachmentService from '../../../services/RemoveAttachmentService';
+import CreateAttachmentService from '../../../services/attachments/CreateAttachmentService';
+import ListAttachmentsService from '../../../services/attachments/ListAttachmentsService';
+import RemoveAttachmentService from '../../../services/attachments/RemoveAttachmentService';
+import ShowAttachmentService from '../../../services/attachments/ShowAttachmentService';
 
 export default class AttachmentsController {
   public async index(request: Request, response: Response): Promise<Response> {

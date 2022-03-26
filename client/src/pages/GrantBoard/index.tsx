@@ -16,14 +16,6 @@ import { FiInfo } from 'react-icons/fi';
 import MenuIcon from '../../components/MenuIcon';
 import StatusCard from '../../components/StatusCard';
 
-// interface ConfirmDeletionProps {
-//   id: string;
-//   open: boolean;
-//   setOpen: Dispatch<SetStateAction<boolean>>;
-//   grants: Grant[];
-//   setGrants: Dispatch<SetStateAction<Grant[]>>;
-// }
-
 const GrantBoard: React.FC = () => {
   const { signOut } = useAuth();
 
@@ -160,7 +152,7 @@ const GrantTable: React.FC = () => {
                   </th>
                   <th
                     scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider"
                   >
                     Status
                   </th>
@@ -277,15 +269,6 @@ const GrantTable: React.FC = () => {
                         </td>
                       )}
                     </tr>
-                    {/* {open && (
-                        <ConfirmDeletionPopup
-                          id={grant.id}
-                          open={open}
-                          setOpen={setOpen}
-                          grants={grants}
-                          setGrants={setGrants}
-                        />
-                      )} */}
                   </Fragment>
                 ))}
               </tbody>

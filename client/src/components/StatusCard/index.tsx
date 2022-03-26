@@ -57,8 +57,12 @@ const TooltipHolder: React.FC<{
   bgColor?: string;
 }> = ({ title, tooltipText, titleColor, bgColor }) =>
   titleColor && bgColor ? (
-    <div className={`status-holder group bg-${bgColor}`}>
-      <span className={`text-${titleColor}`}>{title}</span>
+    <div className={`status-holder group`}>
+      <span
+        className={`px-2 inline-flex text-md leading-5 font-semibold rounded-full text-${titleColor} bg-${bgColor}`}
+      >
+        {title}
+      </span>
       {tooltipText && (
         <span className="status-tooltip group-hover:scale-100">
           {tooltipText}

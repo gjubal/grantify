@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
 import { container } from 'tsyringe';
-import ListExpensesService from '../../../services/ListExpensesService';
-import ShowExpenseService from '../../../services/ShowExpenseService';
-import CreateExpenseService from '../../../services/CreateExpenseService';
-import RemoveExpenseService from '../../../services/RemoveExpenseService';
+import CreateExpenseService from '../../../services/expenses/CreateExpenseService';
+import ListExpensesService from '../../../services/expenses/ListExpensesService';
+import RemoveExpenseService from '../../../services/expenses/RemoveExpenseService';
+import ShowExpenseService from '../../../services/expenses/ShowExpenseService';
 
 export default class ExpensesController {
   public async index(request: Request, response: Response): Promise<Response> {
@@ -12,6 +12,17 @@ export default class ExpensesController {
     const listExpenses = container.resolve(ListExpensesService);
 
     const expenses = await listExpenses.findAllByGrantId(grantId);
+
+    return response.json(expenses);
+  }
+
+  public async query(request: Request, response: Response): Promise<Response> {
+    const { id: grantId } = request.params;
+    const { name, date } = request.query as { name: string; date: string };
+
+    const listExpenses = container.resolve(ListExpensesService);
+
+    const expenses = await listExpenses.queryByFilters({ name, date, grantId });
 
     return response.json(expenses);
   }
