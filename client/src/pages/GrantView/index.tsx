@@ -166,13 +166,15 @@ const GrantView: React.FC = () => {
                   <p className="mx-2">Archive</p>
                 </Link>
               </div>
-              <ExpensesBreakdown
-                expenses={expenses}
-                setExpenses={setExpenses}
-                setOpen={setOpen}
-                deleteExpense={deleteExpense}
-                searchExpensesFormRef={searchExpensesFormRef}
-              />
+              {!['Pending', 'Incomplete'].includes(grant.status) && (
+                <ExpensesBreakdown
+                  expenses={expenses}
+                  setExpenses={setExpenses}
+                  setOpen={setOpen}
+                  deleteExpense={deleteExpense}
+                  searchExpensesFormRef={searchExpensesFormRef}
+                />
+              )}
               {open && (
                 <AddExpenseForm
                   setOpen={setOpen}
@@ -202,12 +204,15 @@ const GrantGrid: React.FC<{ grant: Grant; expenses: Expense[] }> = ({
           title={'Amount Requested'}
           data={grant.amountRequested.toString()}
         />
-        {grant.amountApproved && (
-          <DataBox
-            title={'Amount Approved'}
-            data={grant.amountApproved.toString()}
-          />
-        )}
+        {grant.amountApproved &&
+          !['Pending', 'Incomplete', 'Missed Deadline', 'Declined'].includes(
+            grant.status,
+          ) && (
+            <DataBox
+              title={'Amount Approved'}
+              data={grant.amountApproved.toString()}
+            />
+          )}
         {grant.amountApproved && expenses.length !== 0 && (
           <DataBox
             title={'Remaining Balance'}
@@ -224,12 +229,15 @@ const GrantGrid: React.FC<{ grant: Grant; expenses: Expense[] }> = ({
         {grant.expirationDate && (
           <DataBox title={'Expiration Date'} data={grant.expirationDate} />
         )}
-        {grant.dateWhenFundsWereReceived && (
-          <DataBox
-            title={'Fund Receipt Date'}
-            data={grant.dateWhenFundsWereReceived}
-          />
-        )}
+        {grant.dateWhenFundsWereReceived &&
+          !['Pending', 'Incomplete', 'Missed Deadline', 'Declined'].includes(
+            grant.status,
+          ) && (
+            <DataBox
+              title={'Fund Receipt Date'}
+              data={grant.dateWhenFundsWereReceived}
+            />
+          )}
         {grant.writerName && (
           <DataBox title={'Writer'} data={grant.writerName} />
         )}
