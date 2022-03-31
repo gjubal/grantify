@@ -1,6 +1,13 @@
 import styled from 'styled-components';
 
-export const Container = styled.div``;
+export const Fragment = styled.div`
+  margin-top: 4rem;
+`;
+
+export const Container = styled.div`
+  width: 800px;
+  height: 800px;
+`;
 
 export const Profile = styled.div`
   display: flex;
