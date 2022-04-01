@@ -17,6 +17,11 @@ import MenuIcon from '../../components/MenuIcon';
 import StatusCard from '../../components/StatusCard';
 import { Container } from './styles';
 
+<div
+  id="hiddendiv"
+  className="bg-green-100 text-red-700 bg-red-200 bg-cyan-200 text-cyan-900 bg-yellow-100 text-yellow-800 bg-blue-100 text-blue-700 bg-gray-300 text-gray-800"
+></div>;
+
 const GrantBoard: React.FC = () => {
   const { signOut } = useAuth();
 

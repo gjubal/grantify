@@ -291,7 +291,13 @@ const DataBox: React.FC<{
           </h3>
         )}
 
-        {title === 'Status' && <StatusCard text={data} />}
+        {title === 'Status' && (
+          <div>
+            <span className="-ml-2">
+              <StatusCard text={data} />
+            </span>
+          </div>
+        )}
 
         {title === 'Notes' && <p>{data}</p>}
       </div>
