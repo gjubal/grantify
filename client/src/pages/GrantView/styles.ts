@@ -5,6 +5,10 @@ interface EntryProps {
   ml?: string;
 }
 
+export const Container = styled.div`
+  margin-top: 4rem;
+`;
+
 export const DataboxContainer = styled.div`
   width: 300px;
 `;

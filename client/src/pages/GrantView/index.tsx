@@ -22,6 +22,7 @@ import Divider from '../../components/Divider';
 import {
   AnimationContainer,
   ButtonSpan,
+  Container,
   Entry,
   ExpenseContainer,
   ExpenseRowContainer,
@@ -199,57 +200,59 @@ const GrantGrid: React.FC<{ grant: Grant; expenses: Expense[] }> = ({
     <>
       <h1 className="content-title">{grant.grantName}</h1>
 
-      <section className="grid grid-cols-3 gap-5">
-        <DataBox
-          title={'Amount Requested'}
-          data={grant.amountRequested.toString()}
-        />
-        {grant.amountApproved &&
-          !['Pending', 'Incomplete', 'Missed Deadline', 'Declined'].includes(
-            grant.status,
-          ) && (
+      <Container>
+        <section className="grid grid-cols-3 gap-5">
+          <DataBox
+            title={'Amount Requested'}
+            data={grant.amountRequested.toString()}
+          />
+          {grant.amountApproved &&
+            !['Pending', 'Incomplete', 'Missed Deadline', 'Declined'].includes(
+              grant.status,
+            ) && (
+              <DataBox
+                title={'Amount Approved'}
+                data={grant.amountApproved.toString()}
+              />
+            )}
+          {grant.amountApproved && expenses.length !== 0 && (
             <DataBox
-              title={'Amount Approved'}
-              data={grant.amountApproved.toString()}
+              title={'Remaining Balance'}
+              data={(
+                grant.amountApproved -
+                expenses
+                  .map(expense => Number(expense.amountSpent))
+                  .reduce((acc, cv) => (acc += cv))
+              ).toFixed(2)}
             />
           )}
-        {grant.amountApproved && expenses.length !== 0 && (
-          <DataBox
-            title={'Remaining Balance'}
-            data={(
-              grant.amountApproved -
-              expenses
-                .map(expense => Number(expense.amountSpent))
-                .reduce((acc, cv) => (acc += cv))
-            ).toFixed(2)}
-          />
-        )}
-        <DataBox title={'Open Date'} data={grant.openDate} />
-        <DataBox title={'Close Date'} data={grant.closeDate} />
-        {grant.expirationDate && (
-          <DataBox title={'Expiration Date'} data={grant.expirationDate} />
-        )}
-        {grant.dateWhenFundsWereReceived &&
-          !['Pending', 'Incomplete', 'Missed Deadline', 'Declined'].includes(
-            grant.status,
-          ) && (
+          <DataBox title={'Open Date'} data={grant.openDate} />
+          <DataBox title={'Close Date'} data={grant.closeDate} />
+          {grant.expirationDate && (
+            <DataBox title={'Expiration Date'} data={grant.expirationDate} />
+          )}
+          {grant.dateWhenFundsWereReceived &&
+            !['Pending', 'Incomplete', 'Missed Deadline', 'Declined'].includes(
+              grant.status,
+            ) && (
+              <DataBox
+                title={'Fund Receipt Date'}
+                data={grant.dateWhenFundsWereReceived}
+              />
+            )}
+          {grant.writerName && (
+            <DataBox title={'Writer'} data={grant.writerName} />
+          )}
+          {grant.sponsoringAgency && (
             <DataBox
-              title={'Fund Receipt Date'}
-              data={grant.dateWhenFundsWereReceived}
+              title={'Sponsoring Agency'}
+              data={grant.sponsoringAgency}
+              link={grant.applicationUrl}
             />
           )}
-        {grant.writerName && (
-          <DataBox title={'Writer'} data={grant.writerName} />
-        )}
-        {grant.sponsoringAgency && (
-          <DataBox
-            title={'Sponsoring Agency'}
-            data={grant.sponsoringAgency}
-            link={grant.applicationUrl}
-          />
-        )}
-        <DataBox title={'Status'} data={grant.status} />
-      </section>
+          <DataBox title={'Status'} data={grant.status} />
+        </section>
+      </Container>
     </>
   );
 };
