@@ -9,7 +9,7 @@ import { useToast } from '../../hooks/toast';
 import UserPermissionAssociation from '../../types/UserPermissionAssociation';
 import Permission from '../../types/Permission';
 import convertFromTimestampToString from '../../utils/convertFromTimestampToString';
-import { formatDistanceToNow } from 'date-fns';
+import { formatDistanceToNow, isFuture, isPast, isToday } from 'date-fns';
 import isWithinDateRange from '../../utils/isWithinDateRange';
 import { FiLink } from 'react-icons/fi';
 import { Container, Fragment } from './styles';
@@ -141,7 +141,7 @@ const DeadlineTable: React.FC<{
                   </th>
                   <th
                     scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    className="pl-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider"
                   >
                     Application Url
                   </th>
@@ -160,17 +160,24 @@ const DeadlineTable: React.FC<{
                     <td className="py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-500">
                         {convertFromTimestampToString(grant.closeDate)} -{' '}
-                        {Number(
-                          formatDistanceToNow(new Date(grant.closeDate)).split(
-                            ' ',
-                          )[0],
-                        ) + 1}{' '}
-                        {
-                          formatDistanceToNow(new Date(grant.closeDate)).split(
-                            ' ',
-                          )[1]
-                        }{' '}
-                        from today
+                        {/* today */}
+                        {isPast(new Date(grant.closeDate)) &&
+                          isToday(new Date(grant.closeDate)) &&
+                          'Today'}
+                        {/* tomorrow */}
+                        {isToday(new Date(grant.closeDate)) &&
+                          isFuture(new Date(grant.closeDate)) &&
+                          '1 day from today'}
+                        {/* any other date in the future (as specified by the 2nd parameter of the isWithinDateRange function) */}
+                        {!isToday(new Date(grant.closeDate)) &&
+                          isFuture(new Date(grant.closeDate)) &&
+                          `${
+                            Number(
+                              formatDistanceToNow(
+                                new Date(grant.closeDate),
+                              ).split(' ')[0],
+                            ) + 1
+                          } days from today`}
                       </div>
                     </td>
                     <td className="flex flex-row justify-center py-4 whitespace-nowrap">
