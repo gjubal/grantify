@@ -104,8 +104,10 @@ const Dashboard: React.FC = () => {
         </div>
         <section className="flex flex-col">
           <DeadlineTable
-            data={grants.filter(grant =>
-              isWithinDateRange(new Date(grant.closeDate), 7),
+            data={grants.filter(
+              grant =>
+                isWithinDateRange(new Date(grant.closeDate), 7) &&
+                grant.status === 'Incomplete',
             )}
             canAccess={canAccess}
           />
