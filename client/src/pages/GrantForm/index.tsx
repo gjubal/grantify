@@ -314,7 +314,7 @@ const FormFields: React.FC = () => {
 
               <Input
                 name="sponsoringAgency"
-                label="Sponsoring Agency (optional)"
+                label="Grantor (optional)"
                 placeholder="Wayne Enterprises"
                 value={id && sponsoringAgency}
                 onChange={e => setSponsoringAgency(e.target.value)}

@@ -245,7 +245,7 @@ const GrantGrid: React.FC<{ grant: Grant; expenses: Expense[] }> = ({
           )}
           {grant.sponsoringAgency && (
             <DataBox
-              title={'Sponsoring Agency'}
+              title={'Grantor'}
               data={grant.sponsoringAgency}
               link={grant.applicationUrl}
             />
@@ -282,9 +282,7 @@ const DataBox: React.FC<{
           {!isNaN(Number(data)) && <h3>${formatCurrency(Number(data))}</h3>}
         </span>
 
-        {(title === 'Sponsoring Agency' || title === 'Writer') && (
-          <h3>{data}</h3>
-        )}
+        {(title === 'Grantor' || title === 'Writer') && <h3>{data}</h3>}
 
         {title === 'Application Url' && !link && <h3>{data}</h3>}
 
