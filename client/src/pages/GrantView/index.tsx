@@ -328,14 +328,47 @@ const ExpensesBreakdown: React.FC<{
   }, [id, setExpenses]);
 
   const searchExpenses = useCallback(async () => {
-    const filteredExpenses = expenses.filter(
-      expense =>
-        expense.name.toLowerCase().trim().includes(expenseName.toLowerCase()) &&
-        expense.date.trim() ===
-          `${month.length === 1 ? `0${month}` : month}/${year}`,
-    );
+    if (expenseName && month && year) {
+      const filteredExpenses = expenses.filter(
+        expense =>
+          expense.name
+            .toLowerCase()
+            .trim()
+            .includes(expenseName.toLowerCase()) &&
+          expense.date.trim() ===
+            `${month.length === 1 ? `0${month}` : month}/${year}`,
+      );
 
-    setExpenses(filteredExpenses);
+      setExpenses(filteredExpenses);
+    } else if (expenseName && !month && !year) {
+      const filteredExpenses = expenses.filter(expense =>
+        expense.name.toLowerCase().trim().includes(expenseName.toLowerCase()),
+      );
+
+      setExpenses(filteredExpenses);
+    } else if (!expenseName && month && year) {
+      const filteredExpenses = expenses.filter(
+        expense =>
+          expense.date.trim() ===
+          `${month.length === 1 ? `0${month}` : month}/${year}`,
+      );
+
+      setExpenses(filteredExpenses);
+    } else if (!expenseName && !month && year) {
+      const filteredExpenses = expenses.filter(
+        expense => expense.date.trim().split('/')[1] === year,
+      );
+
+      setExpenses(filteredExpenses);
+    } else if (!expenseName && month && !year) {
+      const filteredExpenses = expenses.filter(
+        expense =>
+          expense.date.trim().split('/')[0] ===
+          (month.length === 1 ? `0${month}` : month),
+      );
+
+      setExpenses(filteredExpenses);
+    }
   }, [expenseName, expenses, month, setExpenses, year]);
 
   return (
