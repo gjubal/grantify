@@ -104,7 +104,6 @@ const ResetPassword: React.FC = () => {
           </Form>
         </AnimationContainer>
       </Content>
-      <Background />
     </Container>
   );
 };

@@ -5,6 +5,7 @@ import { classToClass } from 'class-transformer';
 import ListUsersService from '../../../services/ListUsersService';
 import ShowUserService from '../../../services/ShowUserService';
 import CreateUserService from '../../../services/CreateUserService';
+import DeleteUserService from '../../../services/DeleteUserService';
 
 class UsersController {
   public async index(_: Request, response: Response): Promise<Response> {
@@ -35,6 +36,21 @@ class UsersController {
       lastName: last_name,
       email,
       password,
+    });
+
+    return response.json(classToClass(user));
+  }
+
+  public async destroy(
+    request: Request,
+    response: Response,
+  ): Promise<Response> {
+    const { id } = request.params;
+
+    const deleteUser = container.resolve(DeleteUserService);
+
+    const user = await deleteUser.execute({
+      userId: id,
     });
 
     return response.json(classToClass(user));

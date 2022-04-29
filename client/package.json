@@ -33,7 +33,6 @@
     "react-scripts": "4.0.3",
     "react-spring": "^8.0.27",
     "styled-components": "^5.2.1",
-    "tailwindcss": "npm:@tailwindcss/postcss7-compat",
     "typescript": "^4.0.3",
     "uuid": "^8.3.2",
     "web-vitals": "^1.0.1",
@@ -45,7 +44,7 @@
     "test": "craco test",
     "build-css": "tailwindcss build src/index.css -o public/styles.css",
     "eject": "react-scripts eject",
-    "deploy": "aws s3 sync build/ s3://grantify-client"
+    "deploy": "aws s3 sync build/ s3://grantify-prod-client"
   },
   "eslintConfig": {
     "extends": [

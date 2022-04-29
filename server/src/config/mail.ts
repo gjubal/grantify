@@ -1,6 +1,5 @@
 interface IMailConfig {
-  driver: 'ethereal';
-  // | 'ses';
+  driver: 'ethereal' | 'ses';
 
   defaults: {
     from: {
@@ -15,8 +14,8 @@ export default {
 
   defaults: {
     from: {
-      email: 'grantifyteam@gmail.com',
-      name: 'Grantify Team',
+      email: 'grantify@hertotalwellness.org',
+      name: 'Grantify',
     },
   },
 } as IMailConfig;
