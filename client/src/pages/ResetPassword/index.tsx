@@ -10,7 +10,7 @@ import getValidationErrors from '../../utils/getValidationErrors';
 
 import Input from '../../components/Input';
 import Button from '../../components/Button';
-import { Container, Content, AnimationContainer, Background } from './styles';
+import { Container, Content, AnimationContainer } from './styles';
 
 import api from '../../services/api';
 import { FaFire } from 'react-icons/fa';

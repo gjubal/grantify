@@ -13,6 +13,7 @@ import { formatDistanceToNow, isFuture, isPast, isToday } from 'date-fns';
 import isWithinDateRange from '../../utils/isWithinDateRange';
 import { FiLink } from 'react-icons/fi';
 import { Container, Fragment } from './styles';
+import formatInTimeZone from 'date-fns-tz/formatInTimeZone/index.js';
 
 const Home: React.FC = () => {
   const { signOut } = useAuth();
@@ -161,25 +162,85 @@ const DeadlineTable: React.FC<{
                     </td>
                     <td className="py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-500">
-                        {convertFromTimestampToString(grant.closeDate)} -{' '}
-                        {/* today */}
-                        {isPast(new Date(grant.closeDate)) &&
+                        {formatInTimeZone(
+                          new Date(grant.closeDate),
+                          'America/New_York',
+                          'MM/dd/yyyy',
+                        )}{' '}
+                        -{' '}
+                        {/* {isPast(new Date(grant.closeDate)) &&
                           isToday(new Date(grant.closeDate)) &&
-                          'Today'}
+                          'Today'} */}
+                        {/* today */}
+                        {isToday(
+                          new Date(
+                            formatInTimeZone(
+                              new Date(grant.closeDate),
+                              'America/New_York',
+                              'MM/dd/yyyy',
+                            ),
+                          ),
+                        ) && 'Today'}
                         {/* tomorrow */}
-                        {isToday(new Date(grant.closeDate)) &&
-                          isFuture(new Date(grant.closeDate)) &&
-                          '1 day from today'}
-                        {/* any other date in the future (as specified by the 2nd parameter of the isWithinDateRange function) */}
-                        {!isToday(new Date(grant.closeDate)) &&
-                          isFuture(new Date(grant.closeDate)) &&
-                          `${
+                        {!isToday(
+                          new Date(
+                            formatInTimeZone(
+                              new Date(grant.closeDate),
+                              'America/New_York',
+                              'MM/dd/yyyy',
+                            ),
+                          ),
+                        ) &&
+                          isNaN(
                             Number(
                               formatDistanceToNow(
-                                new Date(grant.closeDate),
+                                new Date(
+                                  formatInTimeZone(
+                                    new Date(grant.closeDate),
+                                    'America/New_York',
+                                    'MM/dd/yyyy',
+                                  ),
+                                ),
                               ).split(' ')[0],
-                            ) + 1
-                          } days from today`}
+                            ),
+                          ) &&
+                          '1 day from today'}
+                        {/* any other date in the future (as specified by the 2nd parameter of the isWithinDateRange function) */}
+                        {!isToday(
+                          new Date(
+                            formatInTimeZone(
+                              new Date(grant.closeDate),
+                              'America/New_York',
+                              'MM/dd/yyyy',
+                            ),
+                          ),
+                        ) &&
+                          !isNaN(
+                            Number(
+                              formatDistanceToNow(
+                                new Date(
+                                  formatInTimeZone(
+                                    new Date(grant.closeDate),
+                                    'America/New_York',
+                                    'MM/dd/yyyy',
+                                  ),
+                                ),
+                              ).split(' ')[0],
+                            ),
+                          ) &&
+                          Number(
+                            formatDistanceToNow(
+                              new Date(
+                                formatInTimeZone(
+                                  new Date(grant.closeDate),
+                                  'America/New_York',
+                                  'MM/dd/yyyy',
+                                ),
+                              ),
+                            ).split(' ')[0],
+                          ) +
+                            1 +
+                            ' days from today'}
                       </div>
                     </td>
                     <td className="flex flex-row justify-center py-4 whitespace-nowrap">
