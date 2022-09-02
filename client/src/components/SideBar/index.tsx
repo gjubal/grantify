@@ -1,4 +1,3 @@
-import { useCallback, useEffect, useState } from 'react';
 import {
   BsPlus,
   BsPower,
@@ -10,44 +9,10 @@ import {
 import { FaFire } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../hooks/authentication';
-import api from '../../services/api';
-import Permission from '../../types/Permission';
-import UserPermissionAssociation from '../../types/UserPermissionAssociation';
 
 const SideBar: React.FC<{ signOut(): void }> = ({ signOut }) => {
-  const [userPermissionAssociations, setUserPermissionAssociations] = useState<
-    UserPermissionAssociation[]
-  >([]);
-  const [permissions, setPermissions] = useState<Permission[]>([]);
-  const { user } = useAuth();
+  const { canAccess } = useAuth();
 
-  const canAccess = useCallback(
-    (permissionDisplayName: string): boolean => {
-      const permissionMatches = permissions.filter(p =>
-        userPermissionAssociations
-          .map(upa => upa.permissionTypeId)
-          .includes(p.id),
-      );
-
-      const displayNamePermissionMatches = permissionMatches.map(
-        pm => pm.displayName,
-      );
-
-      return displayNamePermissionMatches.includes(permissionDisplayName);
-    },
-    [permissions, userPermissionAssociations],
-  );
-
-  useEffect(() => {
-    api
-      .get<UserPermissionAssociation[]>(`users/${user.id}/user-permissions`)
-      .then(response => setUserPermissionAssociations(response.data))
-      .catch(error => error);
-    api
-      .get<Permission[]>('permissions')
-      .then(response => setPermissions(response.data))
-      .catch(error => error);
-  }, [user.id]);
   return (
     <div
       className="top-0 left-0 h-screen flex flex-col w-16

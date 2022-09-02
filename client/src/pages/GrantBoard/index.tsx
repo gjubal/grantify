@@ -1,4 +1,4 @@
-import React, { Fragment, useCallback, useEffect, useState } from 'react';
+import React, { Fragment, useCallback, useState, useEffect } from 'react';
 import SideBar from '../../components/SideBar';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../hooks/authentication';
@@ -7,8 +7,6 @@ import { BsTrash } from 'react-icons/bs';
 import api from '../../services/api';
 import { Grant } from '../../types/Grant';
 import { useToast } from '../../hooks/toast';
-import UserPermissionAssociation from '../../types/UserPermissionAssociation';
-import Permission from '../../types/Permission';
 import TableFooter from '../../components/TableFooter';
 import useTable from '../../hooks/table';
 import formatCurrency from '../../utils/formatCurrency';
@@ -46,32 +44,21 @@ const ContentContainer: React.FC<{ title: string }> = ({ title }) => {
 
 const GrantTable: React.FC = () => {
   const [grants, setGrants] = useState<Grant[]>([]);
-  const [userPermissionAssociations, setUserPermissionAssociations] = useState<
-    UserPermissionAssociation[]
-  >([]);
-  const [permissions, setPermissions] = useState<Permission[]>([]);
   const [page, setPage] = useState(1);
   const { slice, range } = useTable(grants, page, 8);
 
   const { addToast } = useToast();
-  const { user, token, signOut } = useAuth();
+  const { signOut, canAccess } = useAuth();
 
-  const canAccess = useCallback(
-    (permissionDisplayName: string): boolean => {
-      const permissionMatches = permissions.filter(p =>
-        userPermissionAssociations
-          .map(upa => upa.permissionTypeId)
-          .includes(p.id),
-      );
+  const sortGrants = useCallback((grants: Grant[]) => {
+    const grantsSorted = [...grants].sort((a, b) => {
+      if (a.grantName > b.grantName) return 1;
+      else if (a.grantName < b.grantName) return -1;
+      else return 0;
+    });
 
-      const displayNamePermissionMatches = permissionMatches.map(
-        pm => pm.displayName,
-      );
-
-      return displayNamePermissionMatches.includes(permissionDisplayName);
-    },
-    [permissions, userPermissionAssociations],
-  );
+    return grantsSorted;
+  }, []);
 
   const deleteGrant = useCallback(
     (id: string) => {
@@ -92,15 +79,7 @@ const GrantTable: React.FC = () => {
   useEffect(() => {
     api
       .get<Grant[]>('grants')
-      .then(response => {
-        setGrants(
-          [...response.data].sort((a, b) => {
-            if (a.grantName > b.grantName) return 1;
-            else if (a.grantName < b.grantName) return -1;
-            else return 0;
-          }),
-        );
-      })
+      .then(response => setGrants(sortGrants(response.data)))
       .catch(error => {
         if (error.response.status === 401) {
           addToast({
@@ -114,18 +93,7 @@ const GrantTable: React.FC = () => {
 
         return error;
       });
-  }, [addToast, grants, signOut]);
-
-  useEffect(() => {
-    api
-      .get<UserPermissionAssociation[]>(`users/${user.id}/user-permissions`)
-      .then(response => setUserPermissionAssociations(response.data))
-      .catch(error => error);
-    api
-      .get<Permission[]>('permissions')
-      .then(response => setPermissions(response.data))
-      .catch(error => error);
-  }, [token, user.id]);
+  }, [addToast, signOut, sortGrants]);
 
   return (
     <Container>

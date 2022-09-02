@@ -15,8 +15,6 @@ import { FaSearch } from 'react-icons/fa';
 import api from '../../services/api';
 import { Grant } from '../../types/Grant';
 import { useToast } from '../../hooks/toast';
-import UserPermissionAssociation from '../../types/UserPermissionAssociation';
-import Permission from '../../types/Permission';
 import formatCurrency from '../../utils/formatCurrency';
 import MenuIcon from '../../components/MenuIcon';
 import { FiInfo } from 'react-icons/fi';
@@ -68,15 +66,22 @@ function SortButton({
 
 const SearchTable: React.FC = () => {
   const [grants, setGrants] = useState<Grant[]>([]);
-  const [userPermissionAssociations, setUserPermissionAssociations] = useState<
-    UserPermissionAssociation[]
-  >([]);
-  const [permissions, setPermissions] = useState<Permission[]>([]);
+
   const [searchKey, setSearchKey] = useState('');
   const [sortKey, setSortKey] = useState('');
 
   const { addToast } = useToast();
-  const { user, signOut } = useAuth();
+  const { canAccess, signOut } = useAuth();
+
+  const sortGrants = useCallback((grants: Grant[]) => {
+    const grantsSorted = [...grants].sort((a, b) => {
+      if (a.grantName > b.grantName) return 1;
+      else if (a.grantName < b.grantName) return -1;
+      else return 0;
+    });
+
+    return grantsSorted;
+  }, []);
 
   function dateSort() {
     if (sortKey !== 'desc') {
@@ -87,23 +92,6 @@ const SearchTable: React.FC = () => {
       setSortKey('asc');
     }
   }
-
-  const canAccess = useCallback(
-    (permissionDisplayName: string): boolean => {
-      const permissionMatches = permissions.filter(p =>
-        userPermissionAssociations
-          .map(upa => upa.permissionTypeId)
-          .includes(p.id),
-      );
-
-      const displayNamePermissionMatches = permissionMatches.map(
-        pm => pm.displayName,
-      );
-
-      return displayNamePermissionMatches.includes(permissionDisplayName);
-    },
-    [permissions, userPermissionAssociations],
-  );
 
   const deleteGrant = useCallback(
     (id: string) => {
@@ -124,14 +112,7 @@ const SearchTable: React.FC = () => {
   useEffect(() => {
     api
       .get<Grant[]>('grants')
-      .then(response => {
-        const sortedGrants = [...response.data].sort((a, b) => {
-          if (a.grantName > b.grantName) return 1;
-          else if (a.grantName < b.grantName) return -1;
-          else return 0;
-        });
-        setGrants(sortedGrants);
-      })
+      .then(response => setGrants(sortGrants(response.data)))
       .catch(error => {
         if (error.response.status === 401) {
           addToast({
@@ -145,18 +126,7 @@ const SearchTable: React.FC = () => {
 
         return error;
       });
-  }, [addToast, signOut]);
-
-  useEffect(() => {
-    api
-      .get<UserPermissionAssociation[]>(`users/${user.id}/user-permissions`)
-      .then(response => setUserPermissionAssociations(response.data))
-      .catch(error => error);
-    api
-      .get<Permission[]>('permissions')
-      .then(response => setPermissions(response.data))
-      .catch(error => error);
-  }, [user.id]);
+  }, [addToast, signOut, sortGrants]);
 
   return (
     <Container>

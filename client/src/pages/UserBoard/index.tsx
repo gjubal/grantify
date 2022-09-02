@@ -6,8 +6,6 @@ import { useAuth } from '../../hooks/authentication';
 import useTable from '../../hooks/table';
 import { useToast } from '../../hooks/toast';
 import api from '../../services/api';
-import Permission from '../../types/Permission';
-import UserPermissionAssociation from '../../types/UserPermissionAssociation';
 import { Container } from './styles';
 
 type User = {
@@ -37,47 +35,34 @@ const UserBoard: React.FC = () => {
 
 const UsersTable: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
-  const [userPermissionAssociations, setUserPermissionAssociations] = useState<
-    UserPermissionAssociation[]
-  >([]);
-  const [permissions, setPermissions] = useState<Permission[]>([]);
+
+  // const [userPermissionAssociations, setUserPermissionAssociations] = useState<
+  //   UserPermissionAssociation[]
+  // >([]);
   const [page, setPage] = useState(1);
-  const { slice, range } = useTable(users, page, 8);
-  const { user, signOut } = useAuth();
+  const { signOut, canAccess } = useAuth();
   const { addToast } = useToast();
 
-  const canAccess = useCallback(
-    (permissionDisplayName: string): boolean => {
-      const permissionMatches = permissions.filter(p =>
-        userPermissionAssociations
-          .map(upa => upa.permissionTypeId)
-          .includes(p.id),
-      );
+  const sortUsers = useCallback((users: User[]) => {
+    const usersArr: User[] = users.filter(
+      (user: User) => user.email !== process.env.REACT_APP_SEED_USER_EMAIL,
+    );
 
-      const displayNamePermissionMatches = permissionMatches.map(
-        pm => pm.displayName,
-      );
+    const usersAfterSorting = [...usersArr].sort((a, b) => {
+      if (a.firstName > b.firstName) return 1;
+      else if (a.firstName < b.firstName) return -1;
+      else return 0;
+    });
 
-      return displayNamePermissionMatches.includes(permissionDisplayName);
-    },
-    [permissions, userPermissionAssociations],
-  );
+    return usersAfterSorting;
+  }, []);
+
+  const { slice, range } = useTable(users, page, 8);
 
   useEffect(() => {
     api
-      .get('users')
-      .then(response => {
-        const usersArr: User[] = response.data.filter(
-          (user: User) => user.email !== process.env.REACT_APP_SEED_USER_EMAIL,
-        );
-
-        const sortedUsers = [...usersArr].sort((a, b) => {
-          if (a.firstName > b.firstName) return 1;
-          else if (a.firstName < b.firstName) return -1;
-          else return 0;
-        });
-        setUsers(sortedUsers);
-      })
+      .get<User[]>('users')
+      .then(response => setUsers(sortUsers(response.data)))
       .catch(error => {
         if (error.response.status === 401) {
           addToast({
@@ -91,18 +76,14 @@ const UsersTable: React.FC = () => {
 
         return error;
       });
-  }, [addToast, signOut]);
+  }, [addToast, signOut, sortUsers]);
 
-  useEffect(() => {
-    api
-      .get<UserPermissionAssociation[]>(`users/${user.id}/user-permissions`)
-      .then(response => setUserPermissionAssociations(response.data))
-      .catch(error => error);
-    api
-      .get<Permission[]>('permissions')
-      .then(response => setPermissions(response.data))
-      .catch(error => error);
-  }, [user.id]);
+  // useEffect(() => {
+  //   api
+  //     .get<UserPermissionAssociation[]>(`users/${user.id}/user-permissions`)
+  //     .then(response => setUserPermissionAssociations(response.data))
+  //     .catch(error => error);
+  // }, [user.id]);
 
   return (
     <Container>

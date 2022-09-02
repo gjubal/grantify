@@ -10,11 +10,6 @@ import { useToast } from '../../hooks/toast';
 import api from '../../services/api';
 import { Container } from './styles';
 
-type Permission = {
-  id: number;
-  displayName: string;
-};
-
 type UserPermissionAssn = {
   id: string;
   userId: string;
@@ -38,11 +33,11 @@ const PermissionBoard: React.FC = () => {
 };
 
 const PermissionsTable: React.FC = () => {
-  const [permissions, setPermissions] = useState<Permission[]>([]);
   const [currentPermissions, setCurrentPermissions] = useState<
     UserPermissionAssn[]
   >([]);
 
+  const { permissions } = useAuth();
   const { id } = useParams<{ id: string }>();
   const formRef = useRef<FormHandles>(null);
   const { addToast } = useToast();
@@ -136,8 +131,6 @@ const PermissionsTable: React.FC = () => {
   }, [addToast, currentPermissions, id, permissions]);
 
   useEffect(() => {
-    api.get('permissions').then(response => setPermissions(response.data));
-
     if (id) {
       api
         .get(`users/${id}/user-permissions`)

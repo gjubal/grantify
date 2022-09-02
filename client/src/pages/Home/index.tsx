@@ -1,17 +1,13 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { useHistory } from 'react-router';
+import React, { useEffect, useState } from 'react';
 import SideBar from '../../components/SideBar';
 import { useAuth } from '../../hooks/authentication';
 
 import api from '../../services/api';
 import { Grant } from '../../types/Grant';
 import { useToast } from '../../hooks/toast';
-import UserPermissionAssociation from '../../types/UserPermissionAssociation';
-import Permission from '../../types/Permission';
 import isWithinDateRange from '../../utils/isWithinDateRange';
 import { FiLink } from 'react-icons/fi';
 import { Container, Fragment } from './styles';
-import convertFromStringToTimestamp from '../../utils/convertFromStringToTimestamp';
 import convertFromTimestampToString from '../../utils/convertFromTimestampToString';
 
 const Home: React.FC = () => {
@@ -38,31 +34,9 @@ const ContentContainer: React.FC<{ title: string }> = ({ title }) => {
 
 const Dashboard: React.FC = () => {
   const [grants, setGrants] = useState<Grant[]>([]);
-  const [userPermissionAssociations, setUserPermissionAssociations] = useState<
-    UserPermissionAssociation[]
-  >([]);
-  const [permissions, setPermissions] = useState<Permission[]>([]);
-  const history = useHistory();
 
   const { addToast } = useToast();
-  const { user, token, signOut } = useAuth();
-
-  const canAccess = useCallback(
-    (permissionDisplayName: string): boolean => {
-      const permissionMatches = permissions.filter(p =>
-        userPermissionAssociations
-          .map(upa => upa.permissionTypeId)
-          .includes(p.id),
-      );
-
-      const displayNamePermissionMatches = permissionMatches.map(
-        pm => pm.displayName,
-      );
-
-      return displayNamePermissionMatches.includes(permissionDisplayName);
-    },
-    [permissions, userPermissionAssociations],
-  );
+  const { signOut, canAccess } = useAuth();
 
   useEffect(() => {
     api
@@ -82,17 +56,6 @@ const Dashboard: React.FC = () => {
         return error;
       });
   }, [addToast, signOut]);
-
-  useEffect(() => {
-    api
-      .get<UserPermissionAssociation[]>(`users/${user.id}/user-permissions`)
-      .then(response => setUserPermissionAssociations(response.data))
-      .catch(error => error);
-    api
-      .get<Permission[]>('permissions')
-      .then(response => setPermissions(response.data))
-      .catch(error => error);
-  }, [history, signOut, token, user.id]);
 
   return (
     <Fragment>
